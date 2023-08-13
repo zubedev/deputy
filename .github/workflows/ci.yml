@@ -14,33 +14,8 @@ env:
   POETRY_VERSION: 1.5.1
 
 jobs:
-  lint:
-    name: "Lint"
-    runs-on: ubuntu-latest
-    steps:
-      # check out the repo and setup python
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
-      # load pip cache from previous steps if exists
-      - uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: ${{ runner.os }}-pip
-      - uses: chartboost/ruff-action@v1
-      # install dependencies and lint project
-      - name: Install dependencies
-        run: pip install black mypy
-      - name: Lint project
-        run: |
-          black --check .
-          mypy --strict --ignore-missing-imports .
-
-  tests:
-    name: "Pytest"
+  ci:
+    name: "Deputy CI"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3  # check out the repo
@@ -77,5 +52,11 @@ jobs:
           poetry config virtualenvs.create true
           poetry config virtualenvs.in-project true
           poetry install --with=dev --no-interaction
-      - name: Run pytest
+      - name: Lint project
+        uses: chartboost/ruff-action@v1
+      - name: Format project
+        run: poetry run black --check .
+      - name: Type check project
+        run: poetry run mypy .
+      - name: Test project
         run: poetry run pytest
