@@ -4,4 +4,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+# run the wait-for-it script to wait for the database to be ready
+wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" --timeout=60 --strict -- echo "Database is up and running!"
+
 exec "$@"  # run the passed in command

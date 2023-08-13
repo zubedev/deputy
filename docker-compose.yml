@@ -12,8 +12,12 @@ services:
       - .:/deputy
     env_file:
       - .env
+    environment:
+        - POSTGRES_HOST=deputy-db
+        - CELERY_BROKER_URL=amqp://deputy-mq:5672/
     depends_on:
       - deputy-db
+      - deputy-mq
     restart: unless-stopped
     networks:
       - deputy-net
@@ -32,6 +36,81 @@ services:
     restart: unless-stopped
     networks:
       - deputy-net
+
+  deputy-mq:
+    container_name: deputy_mq
+    image: rabbitmq:3-management-alpine
+    hostname: deputy_mq
+    env_file:
+      - .env
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped
+    networks:
+      - deputy-net
+
+  deputy-worker:
+    container_name: deputy_worker
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - .:/deputy
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=deputy-db
+      - CELERY_BROKER_URL=amqp://deputy-mq:5672/
+    depends_on:
+      - deputy-db
+      - deputy-mq
+    restart: unless-stopped
+    networks:
+      - deputy-net
+    command: poetry run celery -A config worker -l INFO
+
+  deputy-beat:
+    container_name: deputy_beat
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - .:/deputy
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=deputy-db
+      - CELERY_BROKER_URL=amqp://deputy-mq:5672/
+    depends_on:
+      - deputy-db
+      - deputy-mq
+    restart: unless-stopped
+    networks:
+      - deputy-net
+    command: poetry run celery -A config beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+  deputy-flower:
+    container_name: deputy_flower
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "5555:5555"
+    volumes:
+      - .:/deputy
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=deputy-db
+      - CELERY_BROKER_URL=amqp://deputy-mq:5672/
+    depends_on:
+      - deputy-db
+      - deputy-mq
+    restart: unless-stopped
+    networks:
+      - deputy-net
+    command: poetry run celery -A config flower -l INFO
 
 volumes:
   deputy-db-data:

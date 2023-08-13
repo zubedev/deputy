@@ -27,7 +27,7 @@ repos:
     -   id: mypy
         args: [--strict, --ignore-missing-imports]
         additional_dependencies:
-            - psycopg
+            - psycopg2-binary
             - python-decouple
             - django-stubs
             - djangorestframework-stubs
@@ -37,3 +37,6 @@ repos:
             - drf_spectacular
             - pytest
             - pytest-django
+            - celery
+            - django_celery_results
+            - django_celery_beat

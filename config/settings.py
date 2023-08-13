@@ -38,6 +38,10 @@ THIRD_PARTY_APPS: list[str] = [
     "django_filters",
     # https://drf-spectacular.readthedocs.io/en/latest/index.html
     "drf_spectacular",
+    # https://docs.celeryq.dev/en/latest/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
+    "django_celery_results",
+    # https://docs.celeryq.dev/en/latest/userguide/periodic-tasks.html#using-custom-scheduler-classes
+    "django_celery_beat",
 ]
 LOCAL_APPS: list[str] = [
     "core",
@@ -268,3 +272,13 @@ LOGGING = {
         },
     },
 }
+
+# Celery # ----------------------------------------------------------------------------------------------------------- #
+
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#configuration
+CELERY_BROKER_URL: str = config("CELERY_BROKER_URL", cast=str, default="amqp://localhost:5672/")
+CELERY_CACHE_BACKEND: str = config("CELERY_CACHE_BACKEND", cast=str, default="django-cache")
+CELERY_RESULT_BACKEND: str = config("CELERY_RESULT_BACKEND", cast=str, default="django-db")
+CELERY_TASK_ALWAYS_EAGER: bool = config("CELERY_TASK_ALWAYS_EAGER", cast=bool, default=False)
+CELERY_TASK_TRACK_STARTED: bool = config("CELERY_TASK_TRACK_STARTED", cast=bool, default=True)
+CELERY_TIMEZONE: str = config("CELERY_TIMEZONE", cast=str, default=TIME_ZONE)
