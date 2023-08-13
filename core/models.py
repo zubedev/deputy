@@ -2,11 +2,11 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.urls import reverse
 
-from config.mixins import TimeStampedStatusMixin
+from config.mixins import BaseModel
 from core.managers import UserManager
 
 
-class User(AbstractBaseUser, TimeStampedStatusMixin, PermissionsMixin):  # type: ignore
+class User(AbstractBaseUser, BaseModel, PermissionsMixin):  # type: ignore
     """Default User model for deputy"""
 
     email = models.EmailField(

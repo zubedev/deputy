@@ -30,8 +30,8 @@ class ActiveStatusMixin(models.Model):
         abstract = True
 
 
-class TimeStampedStatusMixin(TimeStampedMixin, ActiveStatusMixin):
-    """Mixin class to add `created_at`, `updated_at`, and `is_active` fields to a model"""
+class BaseModel(TimeStampedMixin, ActiveStatusMixin):
+    """A BaseModel containing attributes `created_at`, `updated_at`, and `is_active` fields added to a model"""
 
     class Meta:
         abstract = True
