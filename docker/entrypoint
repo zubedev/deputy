@@ -4,7 +4,4 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-# export the DATABASE_URL to be used by Django
-export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
-
 exec "$@"  # run the passed in command

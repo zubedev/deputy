@@ -3,7 +3,6 @@ from typing import Any
 
 import django_stubs_ext
 from decouple import Csv, config
-from dj_database_url import parse as parse_db_url
 
 django_stubs_ext.monkeypatch()
 
@@ -42,6 +41,7 @@ THIRD_PARTY_APPS: list[str] = [
 ]
 LOCAL_APPS: list[str] = [
     "core",
+    "proxy",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS: list[str] = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -88,11 +88,19 @@ WSGI_APPLICATION: str = "config.wsgi.application"
 # Database # --------------------------------------------------------------------------------------------------------- #
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES: dict[str, Any] = {
-    "default": config("DATABASE_URL", cast=parse_db_url, default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("POSTGRES_DB", cast=str, default="postgres"),
+        "USER": config("POSTGRES_USER", cast=str, default="postgres"),
+        "PASSWORD": config("POSTGRES_PASSWORD", cast=str, default="postgres"),
+        "HOST": config("POSTGRES_HOST", cast=str, default="localhost"),
+        "PORT": config("POSTGRES_PORT", cast=int, default=5432),
+        # https://docs.djangoproject.com/en/dev/topics/db/transactions/#module-django.db.transaction
+        "ATOMIC_REQUESTS": True,
+    }
 }
-# https://docs.djangoproject.com/en/dev/topics/db/transactions/#module-django.db.transaction
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
+
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
 

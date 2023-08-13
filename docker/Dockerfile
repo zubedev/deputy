@@ -28,6 +28,13 @@ WORKDIR /deputy
 COPY poetry.lock* pyproject.toml /deputy/
 RUN poetry install --with=dev --no-interaction
 
+# install scrapy dependencies
+RUN playwright install chromium
+RUN playwright install-deps \
+    # cleaning up unused files \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && rm -rf /var/lib/apt/lists/*
+
 # copy entry script
 COPY docker/entrypoint /entrypoint
 RUN chmod +x /entrypoint

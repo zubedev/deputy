@@ -27,13 +27,13 @@ repos:
     -   id: mypy
         args: [--strict, --ignore-missing-imports]
         additional_dependencies:
+            - psycopg
             - python-decouple
             - django-stubs
             - djangorestframework-stubs
             - djangorestframework
             - django-cors-headers
             - django-filter
-            - dj_database_url
             - drf_spectacular
             - pytest
             - pytest-django
