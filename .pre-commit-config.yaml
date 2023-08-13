@@ -27,7 +27,7 @@ repos:
     -   id: mypy
         args: [--strict, --ignore-missing-imports]
         additional_dependencies:
-            - psycopg2-binary
+            - psycopg[binary]
             - python-decouple
             - django-stubs
             - djangorestframework-stubs
