@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# run the wait-for-it script to wait for the database to be ready
+wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" --timeout=60 --strict -- echo "Database is up and running!"
+
+echo "Running migrations..."
+python manage.py migrate --noinput
+
+echo "Creating superuser..."
+python manage.py createsuperuser --noinput 2> /dev/null || true
+
+echo "Running collectstatic..."
+python manage.py collectstatic --noinput
+
+# run the server on 0.0.0.0:8000
+exec python manage.py runserver 0.0.0.0:8000

@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  deputy-app:
+    container_name: deputy_app
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - deputy-db
+    restart: unless-stopped
+    networks:
+      - deputy-net
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+
+  deputy-db:
+    container_name: deputy_db
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - deputy-db-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - deputy-net
+
+volumes:
+  deputy-db-data:
+
+networks:
+  deputy-net:

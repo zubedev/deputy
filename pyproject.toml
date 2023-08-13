@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "deputy"
+version = "0.1.0"
+description = "REST API for Proxies"
+authors = ["Md Zubair Beg <deputy@zube.dev>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11.4"
+python-decouple = "^3.8"
+psycopg2 = "^2.9.7"
+django = {extras = ["argon2"], version = "^4.2.4"}
+dj-database-url = "^2.0.0"
+djangorestframework = "^3.14.0"
+django-cors-headers = "^4.2.0"
+django-filter = "^23.2"
+drf-spectacular = "^0.26.4"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.3.3"
+black = "^23.7.0"
+mypy = "^1.4.1"
+ruff = "^0.0.282"
+django-stubs = {extras = ["compatible-mypy"], version = "^4.2.3"}
+djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14.2"}
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+pytest-django = "^4.5.2"
+pytest-factoryboy = "^2.5.1"
+pytest-mypy-plugins = "^2.0.0"
+pytest-xdist = {extras = ["psutil"], version = "^3.3.1"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
+# https://beta.ruff.rs/docs/rules
+extend-select = ["DJ", "I", "N", "PT", "UP"]
+extend-exclude = ["migrations"]
+target-version = "py311"
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+minversion = "6.0"
+addopts = "-ra --cov --cov-report=term --cov-report=xml --durations=5 --numprocesses=auto --quiet --strict-markers"
+python_files = ["tests.py", "test_*.py", "*_test.py"]
