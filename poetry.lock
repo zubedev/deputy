@@ -722,6 +722,28 @@ files = [
 Django = ">=3.2"
 
 [[package]]
+name = "django-countries"
+version = "7.5.1"
+description = "Provides a country field for Django models."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-countries-7.5.1.tar.gz", hash = "sha256:22915d9b9403932b731622619940a54894a3eb0da9a374e7249c8fc453c122d7"},
+    {file = "django_countries-7.5.1-py3-none-any.whl", hash = "sha256:2df707aca7a5e677254bed116cf6021a136ebaccd5c2f46860abd6452bb45521"},
+]
+
+[package.dependencies]
+asgiref = "*"
+pyuca = {version = "*", optional = true, markers = "extra == \"pyuca\""}
+typing-extensions = "*"
+
+[package.extras]
+dev = ["black", "django", "djangorestframework", "graphene-django", "pytest", "pytest-django", "tox"]
+maintainer = ["django", "transifex-client", "zest.releaser[recommended]"]
+pyuca = ["pyuca"]
+test = ["djangorestframework", "graphene-django", "pytest", "pytest-cov", "pytest-django"]
+
+[[package]]
 name = "django-filter"
 version = "23.2"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
@@ -1924,6 +1946,17 @@ files = [
 ]
 
 [[package]]
+name = "pyuca"
+version = "1.2"
+description = "a Python implementation of the Unicode Collation Algorithm"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyuca-1.2-py2.py3-none-any.whl", hash = "sha256:abaa12e1bd2c7c68ca8396ff8383bc0654a739cef3ae68fd7af58bf29af0a91e"},
+    {file = "pyuca-1.2.tar.gz", hash = "sha256:8a382fe74627f08c0d18908c0713ca4a20aad5385f077579e56208beea2893b2"},
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.1"
 description = "YAML parser and emitter for Python"
@@ -2310,6 +2343,50 @@ playwright = ">=1.15"
 scrapy = ">=2.0,<2.4.0 || >2.4.0"
 
 [[package]]
+name = "scrapyd"
+version = "1.4.2"
+description = "A service for running Scrapy spiders, with an HTTP API"
+optional = false
+python-versions = "*"
+files = [
+    {file = "scrapyd-1.4.2-py2.py3-none-any.whl", hash = "sha256:2f030bfa1cb04309406c6a96f7ec236706ea04a988fda88e39c07d1890eb7ca9"},
+    {file = "scrapyd-1.4.2.tar.gz", hash = "sha256:fd10df9ba9a2a147cc8015bf15a47a2949e02ea8dee9dcb12e3bc98c2ff50615"},
+]
+
+[package.dependencies]
+packaging = "*"
+scrapy = ">=2.0.0"
+setuptools = "*"
+twisted = ">=17.9"
+w3lib = "*"
+"zope.interface" = "*"
+
+[package.extras]
+docs = ["furo", "sphinx", "sphinx-autobuild"]
+test = ["pytest", "pytest-cov", "requests"]
+
+[[package]]
+name = "scrapyd-client"
+version = "1.2.3"
+description = "A client for Scrapyd"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "scrapyd-client-1.2.3.tar.gz", hash = "sha256:fef27cc0d8bf54cbd03467250fb0705635733de81a577b0ba00c739c2d96c894"},
+    {file = "scrapyd_client-1.2.3-py3-none-any.whl", hash = "sha256:beeab9310f1ff942978ca472e4ccdc88648cfde3c33734a11337a93514a43859"},
+]
+
+[package.dependencies]
+requests = "*"
+scrapy = ">=0.17"
+uberegg = ">=0.1.1"
+urllib3 = "*"
+w3lib = "*"
+
+[package.extras]
+test = ["pytest", "pytest-console-scripts", "pytest-cov", "pytest-mock"]
+
+[[package]]
 name = "service-identity"
 version = "23.1.0"
 description = "Service identity verification for pyOpenSSL & cryptography."
@@ -2481,13 +2558,13 @@ files = [
 
 [[package]]
 name = "types-pytz"
-version = "2023.3.0.0"
+version = "2023.3.0.1"
 description = "Typing stubs for pytz"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-pytz-2023.3.0.0.tar.gz", hash = "sha256:ecdc70d543aaf3616a7e48631543a884f74205f284cefd6649ddf44c6a820aac"},
-    {file = "types_pytz-2023.3.0.0-py3-none-any.whl", hash = "sha256:4fc2a7fbbc315f0b6630e0b899fd6c743705abe1094d007b0e612d10da15e0f3"},
+    {file = "types-pytz-2023.3.0.1.tar.gz", hash = "sha256:1a7b8d4aac70981cfa24478a41eadfcd96a087c986d6f150d77e3ceb3c2bdfab"},
+    {file = "types_pytz-2023.3.0.1-py3-none-any.whl", hash = "sha256:65152e872137926bb67a8fe6cc9cfd794365df86650c5d5fdc7b167b0f38892e"},
 ]
 
 [[package]]
@@ -2546,6 +2623,17 @@ python-versions = ">=2"
 files = [
     {file = "tzdata-2023.3-py2.py3-none-any.whl", hash = "sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda"},
     {file = "tzdata-2023.3.tar.gz", hash = "sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a"},
+]
+
+[[package]]
+name = "uberegg"
+version = "0.1.1"
+description = "Uber-egg (egg with dependencies) builder"
+optional = false
+python-versions = "*"
+files = [
+    {file = "uberegg-0.1.1-py3-none-any.whl", hash = "sha256:d1372b906cdbf897333b8eec9611939b907e18c1eaef2687c69c39fccf9aeef5"},
+    {file = "uberegg-0.1.1.tar.gz", hash = "sha256:30052db3346e75afac1724a5953b9d7fa35fc6c37f861f980cb2a2faed26f5e5"},
 ]
 
 [[package]]
@@ -2679,4 +2767,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11.4"
-content-hash = "9e7a64fae837b1baa65518698dfca84cab04f118fde9399453524eb40a3e4f10"
+content-hash = "64725263471621b711bd71eaea4c3221ee84a699a7f1630c9690d17eb146b1bd"

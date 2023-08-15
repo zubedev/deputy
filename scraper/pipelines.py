@@ -13,6 +13,7 @@ class ProxyPipeline:
             protocol=item["protocol"],
             defaults={
                 "anonymity": item["anonymity"],
+                "country": item["country"],
                 "source": item["source"],
             },
         )

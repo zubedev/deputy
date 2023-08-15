@@ -42,6 +42,8 @@ THIRD_PARTY_APPS: list[str] = [
     "django_celery_results",
     # https://docs.celeryq.dev/en/latest/userguide/periodic-tasks.html#using-custom-scheduler-classes
     "django_celery_beat",
+    # https://github.com/SmileyChris/django-countries
+    "django_countries",
 ]
 LOCAL_APPS: list[str] = [
     "core",

@@ -113,4 +113,18 @@ HTTPCACHE_GZIP = True
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
+
+# https://docs.scrapy.org/en/latest/topics/feed-exports.html
+# FEEDS = {
+#     "items.json": {
+#         "format": "json",
+#         "encoding": "utf-8",
+#         "store_empty": False,
+#         "fields": None,
+#         "indent": 4,
+#         "item_export_kwargs": {
+#             "export_empty_fields": True,
+#         },
+#     },
+# }
 FEED_EXPORT_ENCODING = "utf-8"

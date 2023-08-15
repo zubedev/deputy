@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django_countries.fields import CountryField
 
 from config.enums import AnonymityEnums, ProtocolEnums
 from config.mixins import BaseModel
@@ -23,6 +24,7 @@ class Proxy(BaseModel):
         default=ProtocolEnums.HTTP,
         help_text="protocol of the proxy (http(s) or socks(4|5)).",
     )
+    country = CountryField(default="", help_text="country of the proxy.")
     anonymity = models.CharField(
         "anonymity",
         max_length=11,
