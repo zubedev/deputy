@@ -1,3 +1,4 @@
+import django_countries.fields
 from django.db import migrations, models
 
 
@@ -49,6 +50,10 @@ class Migration(migrations.Migration):
                         max_length=6,
                         verbose_name="protocol",
                     ),
+                ),
+                (
+                    "country",
+                    django_countries.fields.CountryField(default="", help_text="country of the proxy.", max_length=2),
                 ),
                 (
                     "anonymity",

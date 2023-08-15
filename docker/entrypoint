@@ -7,4 +7,8 @@ set -o nounset
 # run the wait-for-it script to wait for the database to be ready
 wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" --timeout=60 --strict -- echo "Database is up and running!"
 
+# initialize the background tasks scheduler
+echo "Initializing tasks..."
+python manage.py init_tasks
+
 exec "$@"  # run the passed in command

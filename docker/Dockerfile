@@ -6,10 +6,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     # psycopg2 dependencies \
     libpq-dev \
     # wait script \
-    wait-for-it \
-    # cleaning up unused files \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && rm -rf /var/lib/apt/lists/*
+    wait-for-it
 
 # set environment variables
 ENV PYTHONUNBUFFERED 1
@@ -29,8 +26,7 @@ COPY poetry.lock* pyproject.toml /deputy/
 RUN poetry install --with=dev --no-interaction
 
 # install scrapy dependencies
-RUN playwright install chromium
-RUN playwright install-deps \
+RUN playwright install --with-deps chromium \
     # cleaning up unused files \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && rm -rf /var/lib/apt/lists/*

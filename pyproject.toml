@@ -15,8 +15,12 @@ djangorestframework = "^3.14.0"
 django-cors-headers = "^4.2.0"
 django-filter = "^23.2"
 drf-spectacular = "^0.26.4"
+django-countries = {extras = ["pyuca"], version = "^7.5.1"}
 scrapy = "^2.10.0"
+scrapyd = "^1.4.2"
+scrapyd-client = "^1.2.3"
 scrapy-playwright = "^0.0.29"
+playwright = "1.36.0"  # pinned due to issue with 1.37.0; installs with scrapy-playwright; remove when fixed
 celery = {extras = ["librabbitmq"], version = "^5.3.1"}
 django-celery-results = "^2.5.1"
 django-celery-beat = "^2.5.0"

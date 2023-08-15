@@ -28,6 +28,7 @@ class ProxyNovaSpider(scrapy.Spider):  # type: ignore
                 ip=self.parse_ip_address(r),
                 port=self.parse_port(r),
                 protocol="https",
+                country=self.parse_country(r),
                 anonymity="elite",
                 source=self.name,
             )
@@ -86,3 +87,15 @@ class ProxyNovaSpider(scrapy.Spider):  # type: ignore
             port = sel.xpath("./td[2]/text()").get()
         # remove the newline character and any leading or trailing whitespace
         return int(port.replace("\n", "").strip())
+
+    def parse_country(self, sel: Selector) -> str:
+        """
+        - Country code with <img> tag `alt` attribute
+
+            <td align="left">
+                <img src="..." alt="au" class="..." />
+                <a href="/proxy-server-list/country-au" title="...">Australia</a>
+            </td>
+        """
+        self.logger.debug("[Selector=`./td[6]/img/@alt`]")
+        return str(sel.xpath("./td[6]/img/@alt").get()).upper()

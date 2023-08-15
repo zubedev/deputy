@@ -74,6 +74,8 @@ instance/
 
 # Scrapy stuff:
 .scrapy
+dbs/
+*.pid
 
 # Sphinx documentation
 docs/_build/
