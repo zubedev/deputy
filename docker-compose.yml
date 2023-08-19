@@ -15,7 +15,6 @@ services:
     depends_on:
       - deputy-db
       - deputy-mq
-      - deputy-scrapyd
     restart: unless-stopped
     networks:
       - deputy-net
@@ -101,29 +100,8 @@ services:
       - deputy-net
     command: poetry run celery -A config flower -l INFO
 
-  deputy-scrapyd:
-    container_name: deputy_scrapyd
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    ports:
-      - "6800:6800"
-    volumes:
-      - deputy-scrapyd-data:/var/lib/scrapyd
-      - .:/deputy
-    env_file:
-      - .env
-    depends_on:
-      - deputy-db
-      - deputy-mq
-    restart: unless-stopped
-    networks:
-      - deputy-net
-    command: poetry run scrapyd --reactor=asyncio --pidfile=
-
 volumes:
   deputy-db-data:
-  deputy-scrapyd-data:
 
 networks:
   deputy-net:

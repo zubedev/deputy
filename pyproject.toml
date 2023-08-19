@@ -16,11 +16,7 @@ django-cors-headers = "^4.2.0"
 django-filter = "^23.2"
 drf-spectacular = "^0.26.4"
 django-countries = {extras = ["pyuca"], version = "^7.5.1"}
-scrapy = "^2.10.0"
-scrapyd = "^1.4.2"
 scrapyd-client = "^1.2.3"
-scrapy-playwright = "^0.0.29"
-playwright = "1.36.0"  # pinned due to issue with 1.37.0; installs with scrapy-playwright; remove when fixed
 celery = {extras = ["librabbitmq"], version = "^5.3.1"}
 django-celery-results = "^2.5.1"
 django-celery-beat = "^2.5.0"
@@ -30,14 +26,14 @@ flower = "^2.0.1"
 pre-commit = "^3.3.3"
 black = "^23.7.0"
 mypy = "^1.4.1"
-ruff = "^0.0.282"
+ruff = "^0.0.285"
 django-stubs = {extras = ["compatible-mypy"], version = "^4.2.3"}
 djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14.2"}
 pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 pytest-django = "^4.5.2"
 pytest-factoryboy = "^2.5.1"
-pytest-mypy-plugins = "^2.0.0"
+pytest-mypy-plugins = "^3.0.0"
 pytest-xdist = {extras = ["psutil"], version = "^3.3.1"}
 
 [build-system]
