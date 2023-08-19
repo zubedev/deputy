@@ -1,16 +1,17 @@
 FROM python:3.11-slim
 
-RUN apt-get update  \
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update -y  \
+    && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
-    # dependencies for building Python packages \
+    # dependencies for building packages
     build-essential \
-    # psycopg2 dependencies \
+    # psycopg2 dependencies
     libpq-dev \
-    # wait script \
+    # wait script
     wait-for-it \
-    # cleaning up unused files \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && rm -rf /var/lib/apt/lists/*
+    # process manager
+    supervisor
 
 # set environment variables
 ENV PYTHONUNBUFFERED 1
@@ -18,7 +19,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV POETRY_VERSION=1.5.1
 
 # install poetry
-RUN pip install --upgrade pip \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip \
     && pip install "poetry==$POETRY_VERSION" \
     && poetry config virtualenvs.create false
 
@@ -27,15 +29,30 @@ WORKDIR /deputy
 
 # install dependencies
 COPY poetry.lock* pyproject.toml /deputy/
-RUN poetry install --with=dev --no-interaction
+RUN --mount=type=cache,target=/root/.cache/pip \
+    poetry install --with=dev --no-interaction
+
+# remove packages that are not needed anymore
+RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /root/.cache/pip
+
+# copy the supervisord config and worker entry script
+COPY docker/supervisord.conf /etc/supervisor/supervisord.conf
+COPY docker/worker /worker
+RUN sed -i "s/\r$//g" /worker \
+    && chmod +x /worker
 
 # copy entry script
 COPY docker/entrypoint /entrypoint
-RUN chmod +x /entrypoint
+RUN sed -i "s/\r$//g" /entrypoint \
+    && chmod +x /entrypoint
 
 # copy the start script
 COPY docker/start /start
-RUN chmod +x /start
+RUN sed -i "s/\r$//g" /start \
+    && chmod +x /start
 
 # copy project
 COPY . .

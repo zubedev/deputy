@@ -52,40 +52,6 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    volumes:
-      - .:/deputy
-    env_file:
-      - .env
-    depends_on:
-      - deputy-db
-      - deputy-mq
-    restart: unless-stopped
-    networks:
-      - deputy-net
-    command: poetry run celery -A config worker -l INFO
-
-  deputy-beat:
-    container_name: deputy_beat
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    volumes:
-      - .:/deputy
-    env_file:
-      - .env
-    depends_on:
-      - deputy-db
-      - deputy-mq
-    restart: unless-stopped
-    networks:
-      - deputy-net
-    command: poetry run celery -A config beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
-
-  deputy-flower:
-    container_name: deputy_flower
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
     ports:
       - "5555:5555"
     volumes:
@@ -98,7 +64,7 @@ services:
     restart: unless-stopped
     networks:
       - deputy-net
-    command: poetry run celery -A config flower -l INFO
+    command: /worker
 
 volumes:
   deputy-db-data:
