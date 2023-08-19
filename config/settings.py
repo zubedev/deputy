@@ -284,3 +284,9 @@ CELERY_RESULT_BACKEND: str = config("CELERY_RESULT_BACKEND", cast=str, default="
 CELERY_TASK_ALWAYS_EAGER: bool = config("CELERY_TASK_ALWAYS_EAGER", cast=bool, default=False)
 CELERY_TASK_TRACK_STARTED: bool = config("CELERY_TASK_TRACK_STARTED", cast=bool, default=True)
 CELERY_TIMEZONE: str = config("CELERY_TIMEZONE", cast=str, default=TIME_ZONE)
+
+# Scrapy # ----------------------------------------------------------------------------------------------------------- #
+
+# https://github.com/zubedev/scrapydoo
+SCRAPY_PROJECT: str = config("SCRAPY_PROJECT", cast=str, default="scraper")
+SCRAPYD_URL: str = config("SCRAPYD_URL", cast=str, default="http://localhost:6800")

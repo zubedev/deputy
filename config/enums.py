@@ -13,3 +13,9 @@ class AnonymityEnums(TextChoices):
     TRANSPARENT = "transparent"
     ANONYMOUS = "anonymous"
     ELITE = "elite"
+
+
+class ScrapyJobStatusEnums(TextChoices):
+    PENDING = "pending"
+    RUNNING = "running"
+    FINISHED = "finished"

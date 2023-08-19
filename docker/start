@@ -4,10 +4,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-echo "Deploying scraper..."
-scrapyd-deploy --version 0.1.0
-rm -rf ./build ./*.egg-info
-
 echo "Running migrations..."
 python manage.py migrate --noinput
 
@@ -17,5 +13,5 @@ python manage.py createsuperuser --noinput 2> /dev/null || true
 echo "Running collectstatic..."
 python manage.py collectstatic --noinput
 
-# run the server on 0.0.0.0:8000
+echo "Running server..."
 exec python manage.py runserver 0.0.0.0:8000
