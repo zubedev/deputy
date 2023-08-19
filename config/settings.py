@@ -4,6 +4,7 @@ from typing import Any
 import django_stubs_ext
 from decouple import Csv, config
 
+# TODO: this package is installed in dev - needs fix
 django_stubs_ext.monkeypatch()
 
 # https://docs.djangoproject.com/en/dev/ref/settings/
