@@ -27,5 +27,5 @@ class Command(BaseCommand):
         # Finally, create schedules for the tasks
         crontab, _ = CrontabSchedule.objects.get_or_create(minute="5", **params)  # every hour on the 5th minute
         PeriodicTask.objects.get_or_create(
-            name="proxy.tasks.crawl", defaults={"task": "proxy.tasks.crawl", "crontab": crontab}
+            name="proxy.tasks.crawl_workflow", defaults={"task": "proxy.tasks.crawl_workflow", "crontab": crontab}
         )
