@@ -11,7 +11,7 @@ from config.enums import ScrapyJobStatusEnums
 from proxy.models import Proxy
 
 
-@shared_task  # type: ignore[misc]
+@shared_task
 def crawl_task(spider: str, spider_args: dict[str, Any] | None = None) -> dict[str, Any] | None:
     client = ScrapydClient(settings.SCRAPYD_URL)
     # schedule a scraping job and get its job id
@@ -30,7 +30,7 @@ def crawl_task(spider: str, spider_args: dict[str, Any] | None = None) -> dict[s
     return None
 
 
-@shared_task  # type: ignore[misc]
+@shared_task
 def save_result_task(result: dict[str, Any] | None = None) -> list[dict[str, Any]] | None:
     # if the crawl task failed, result will be None
     if result is None:
@@ -73,6 +73,6 @@ def save_result_task(result: dict[str, Any] | None = None) -> list[dict[str, Any
     return results
 
 
-@shared_task(ignore_result=True)  # type: ignore[misc]
+@shared_task(ignore_result=True)
 def crawl_workflow() -> None:
     chain(crawl_task.s("proxynova"), save_result_task.s())()

@@ -25,7 +25,7 @@ repos:
     rev: v1.4.1
     hooks:
     -   id: mypy
-        args: [--strict, --ignore-missing-imports]
+        args: [--strict, --ignore-missing-imports, --implicit-reexport]
         additional_dependencies:
             - psycopg[binary]
             - python-decouple
@@ -38,6 +38,7 @@ repos:
             - pytest
             - pytest-django
             - celery
+            - celery-types
             - django_celery_results
             - django_celery_beat
             - django_countries
