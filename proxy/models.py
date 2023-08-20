@@ -4,6 +4,7 @@ from django_countries.fields import CountryField
 
 from config.enums import AnonymityEnums, ProtocolEnums
 from config.mixins import BaseModel
+from proxy.utils import check_proxy
 
 
 class Proxy(BaseModel):
@@ -42,13 +43,18 @@ class Proxy(BaseModel):
         null=True,
         help_text="last time the proxy was checked.",
     )
+    last_worked_at = models.DateTimeField(
+        "last worked at",
+        null=True,
+        help_text="last time the proxy was checked and working.",
+    )
 
     class Meta:
         verbose_name = "proxy"
         verbose_name_plural = "proxies"
         ordering = ["-id"]
-        constraints = [models.UniqueConstraint(fields=["ip", "port", "protocol"], name="unique_proxy")]
-        indexes = [models.Index(fields=["ip", "port", "protocol"], name="index_proxy")]
+        constraints = [models.UniqueConstraint(fields=["ip", "port"], name="unique_proxy")]
+        indexes = [models.Index(fields=["ip", "port"], name="index_proxy")]
 
     @property
     def url(self) -> str:
@@ -56,18 +62,35 @@ class Proxy(BaseModel):
         return f"{self.protocol}://{self.ip}:{self.port}"
 
     def __str__(self) -> str:
-        """Returns the proxy in the format of protocol://ip:port"""
-        return self.url
+        """Returns the proxy in the format of ip:port"""
+        return f"{self.ip}:{self.port}"
 
     def __repr__(self) -> str:
         """Returns the proxy in the format of <Proxy pk=1 data=protocol://ip:port>"""
         if self.pk:
-            return f"<{self.__class__.__name__} pk={self.pk} data={self.url}>"
-        return f"<{self.__class__.__name__} data={self.url}>"
+            return f"<{self.__class__.__name__} pk={self.pk} data={self.__str__()}>"
+        return f"<{self.__class__.__name__} data={self.__str__()}>"
 
     @property
     def is_stale(self) -> bool:
         """Returns True if the proxy is stale: last_checked_at is more than 1 hour ago"""
         if not self.last_checked_at:
             return True
-        return (timezone.now() - self.last_checked_at).total_seconds() > 3600
+        return (timezone.now() - self.last_checked_at).total_seconds() > 3600  # 3600 seconds = 1 hour
+
+    @property
+    def is_working(self) -> bool:
+        """Returns True if the proxy is working, False otherwise. Despite the is_active field."""
+        return check_proxy(self.ip, self.port, self.protocol)
+
+    @property
+    def is_dead(self) -> bool:
+        """Returns True if the proxy is dead, False otherwise."""
+        # must be at least a day old to be considered dead
+        if (timezone.now() - self.created_at).total_seconds() < 86400:  # 86400 seconds = 1 day
+            return False
+        # must have been working at least for a day ago
+        if self.last_worked_at and (timezone.now() - self.last_worked_at).total_seconds() < 86400:  # 86400 secs = 1 day
+            return False
+        # at this point the proxy is a day old and has not been working for a day, so it is dead if it is not active
+        return not self.is_active

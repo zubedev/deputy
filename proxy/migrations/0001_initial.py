@@ -77,16 +77,24 @@ class Migration(migrations.Migration):
                         help_text="last time the proxy was checked.", null=True, verbose_name="last checked at"
                     ),
                 ),
+                (
+                    "last_worked_at",
+                    models.DateTimeField(
+                        help_text="last time the proxy was checked and working.",
+                        null=True,
+                        verbose_name="last worked at",
+                    ),
+                ),
             ],
             options={
                 "verbose_name": "proxy",
                 "verbose_name_plural": "proxies",
                 "ordering": ["-id"],
-                "indexes": [models.Index(fields=["ip", "port", "protocol"], name="index_proxy")],
+                "indexes": [models.Index(fields=["ip", "port"], name="index_proxy")],
             },
         ),
         migrations.AddConstraint(
             model_name="proxy",
-            constraint=models.UniqueConstraint(fields=("ip", "port", "protocol"), name="unique_proxy"),
+            constraint=models.UniqueConstraint(fields=("ip", "port"), name="unique_proxy"),
         ),
     ]

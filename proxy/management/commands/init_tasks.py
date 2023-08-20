@@ -20,12 +20,21 @@ class Command(BaseCommand):
         CrontabSchedule.objects.get_or_create(minute="*/15", **params)  # every 15 minutes
         CrontabSchedule.objects.get_or_create(minute="*/30", **params)  # every 30 minutes
         CrontabSchedule.objects.get_or_create(minute="0", **params)  # every hour
-        CrontabSchedule.objects.get_or_create(minute="15", **params)  # every hour on the 15th minute
-        CrontabSchedule.objects.get_or_create(minute="30", **params)  # every hour on the 30th minute
         CrontabSchedule.objects.get_or_create(minute="45", **params)  # every hour on the 45th minute
 
         # Finally, create schedules for the tasks
         crontab, _ = CrontabSchedule.objects.get_or_create(minute="5", **params)  # every hour on the 5th minute
         PeriodicTask.objects.get_or_create(
             name="proxy.tasks.crawl_workflow", defaults={"task": "proxy.tasks.crawl_workflow", "crontab": crontab}
+        )
+        # cleanup task
+        crontab, _ = CrontabSchedule.objects.get_or_create(minute="15", **params)  # every hour on the 15th minute
+        PeriodicTask.objects.get_or_create(
+            name="proxy.tasks.dead_proxies_cleanup_task",
+            defaults={"task": "proxy.tasks.dead_proxies_cleanup_task", "crontab": crontab},
+        )
+        # recheck task
+        crontab, _ = CrontabSchedule.objects.get_or_create(minute="30", **params)  # every hour on the 30th minute
+        PeriodicTask.objects.get_or_create(
+            name="proxy.tasks.recheck_workflow", defaults={"task": "proxy.tasks.recheck_workflow", "crontab": crontab}
         )

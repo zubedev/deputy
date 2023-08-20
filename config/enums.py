@@ -19,3 +19,10 @@ class ScrapyJobStatusEnums(TextChoices):
     PENDING = "pending"
     RUNNING = "running"
     FINISHED = "finished"
+
+
+class ProxyJudgeEnums(TextChoices):
+    AZENV = "http://azenv.net"
+    CLOUDFLARE = "https://www.cloudflare.com/cdn-cgi/trace"
+    HTTPHEADER = "http://httpheader.net/azenv.php"
+    PROXYSCRAPE = "https://proxyscrape.com/azenv"
