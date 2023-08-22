@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import Any
 
 import requests
-from celery import chain, chord, shared_task
+from celery import chain, chord, group, shared_task
 from django.conf import settings
 from django.utils import timezone
 from scrapyd_client import ScrapydClient
@@ -65,7 +65,7 @@ def check_proxies_task(proxy: ProxyTypedDict | None) -> CheckedProxyTypedDict | 
         return result
 
     timestamp = timezone.now()
-    if check_proxy(**proxy):  # type: ignore
+    if check_proxy(ip=proxy["ip"], port=proxy["port"], protocol=proxy.get("protocol", "")):  # type: ignore
         result.update({"is_active": True, "last_worked_at": timestamp})
 
     result["last_checked_at"] = timestamp
@@ -141,6 +141,8 @@ def proxy_workflow(results: list[ProxyTypedDict] | None) -> None:
 def crawl_workflow() -> None:
     """Workflow for crawling proxies.
 
+    group: run the spiders in parallel, and for each spider, run the following:
+
     chain:
     1. Crawl and scrape proxies within scrapyd, crawl_task() -> job_id
     2. Get the crawl result from scrapyd, get_crawl_result_task(job_id) -> results (jsonlist -> list[proxy])
@@ -149,4 +151,7 @@ def crawl_workflow() -> None:
     3. ...
     4. ...
     """
-    chain(crawl_task.s("proxynova"), get_crawl_result_task.s(), proxy_workflow.s())()
+    client = ScrapydClient(settings.SCRAPYD_URL)
+    spiders = client.spiders(settings.SCRAPY_PROJECT)
+
+    group([chain(crawl_task.s(s), get_crawl_result_task.s(), proxy_workflow.s()) for s in spiders])()
