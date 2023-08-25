@@ -8,10 +8,10 @@ from django.conf import settings
 from django.utils import timezone
 from scrapyd_client import ScrapydClient
 
-from config.enums import ScrapyJobStatusEnums
+from config.enums import ProtocolEnums, ScrapyJobStatusEnums
 from proxy.models import Proxy
 from proxy.types import CheckedProxyTypedDict, JobsTypedDict, JobTypedDict, ProxyTypedDict
-from proxy.utils import check_proxy
+from proxy.utils import check_proxy, get_country_code, remove_duplicates
 
 
 @shared_task
@@ -56,16 +56,23 @@ def get_crawl_result_task(job_id: str) -> list[ProxyTypedDict] | None:
 
 
 @shared_task
-def check_proxies_task(proxy: ProxyTypedDict | None) -> CheckedProxyTypedDict | None:
+def check_proxies_task(proxy: ProxyTypedDict | CheckedProxyTypedDict | None) -> CheckedProxyTypedDict | None:
     if proxy is None:
         return None
 
-    result: CheckedProxyTypedDict = {"is_active": False, **proxy}  # type: ignore[misc]
-    if not all([field in proxy for field in ["ip", "port"]]):
-        return result
+    if not all([proxy.get("ip", False), proxy.get("port", False)]):
+        return None
 
+    result: CheckedProxyTypedDict = {**proxy, "is_active": False}  # type: ignore[misc]
     timestamp = timezone.now()
-    if check_proxy(ip=proxy["ip"], port=proxy["port"], protocol=proxy.get("protocol", "")):  # type: ignore
+    if check_proxy(
+        ip=proxy["ip"],
+        port=proxy["port"],
+        protocol=proxy.get(  # type: ignore[arg-type]
+            "protocol",
+            ProtocolEnums.HTTP.value,
+        ),
+    ):
         result.update({"is_active": True, "last_worked_at": timestamp})
 
     result["last_checked_at"] = timestamp
@@ -81,17 +88,24 @@ def save_proxies_task(
     if results is None:
         return None
 
+    unique_fields = ["ip", "port"]
     update_fields = ["protocol", "last_checked_at", "last_worked_at", "is_active"]
     if do_create:  # add more fields to update for new proxies
         update_fields.extend(["country", "anonymity", "source"])
+        # remove duplicates based on ip and port during creation
+        results = remove_duplicates(results, unique_keys=unique_fields)  # type: ignore[assignment]
 
-    Proxy.objects.bulk_create(
-        [Proxy(**proxy) for proxy in results],
-        update_conflicts=True,
-        update_fields=update_fields,
-        unique_fields=["ip", "port"],
-    )
+    proxies = []
+    for proxy in results:
+        # if the proxy didn't pass the check or missing ip/port, skip it
+        if not proxy:
+            continue
+        # do some country validation
+        if do_create and (country := proxy.get("country", "")):
+            proxy["country"] = get_country_code(country)
+        proxies.append(Proxy(**proxy))
 
+    Proxy.objects.bulk_create(proxies, update_conflicts=True, update_fields=update_fields, unique_fields=unique_fields)
     return results
 
 
@@ -114,7 +128,7 @@ def recheck_workflow() -> None:
     1. Get all proxies, for each, check_proxies_task(proxy) -> proxy (dict)
     2. Update the proxies, update_proxies_task(list[proxy]) -> results (list[proxy])
     """
-    proxies = Proxy.objects.values("ip", "port", "protocol")
+    proxies = Proxy.objects.values("ip", "port", "protocol", "last_checked_at", "last_worked_at", "is_active")
     if not proxies:
         return None
     chord([check_proxies_task.s(p) for p in proxies])(save_proxies_task.s(do_create=False))
