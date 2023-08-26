@@ -27,7 +27,7 @@ requests = {extras = ["socks"], version = "^2.31.0"}
 pre-commit = "^3.3.3"
 black = "^23.7.0"
 mypy = "^1.4.1"
-ruff = "^0.0.285"
+ruff = "^0.0.286"
 django-stubs = {extras = ["compatible-mypy"], version = "^4.2.3"}
 djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14.2"}
 celery-types = "^0.19.0"
