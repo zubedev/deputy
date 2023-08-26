@@ -101,7 +101,8 @@ def save_proxies_task(
         if not proxy:
             continue
         # do some country validation
-        if do_create and (country := proxy.get("country", "")):
+        country = proxy.get("country", "")
+        if do_create and country and len(country) > 2:
             proxy["country"] = get_country_code(country)
         proxies.append(Proxy(**proxy))
 
@@ -122,20 +123,22 @@ def dead_proxies_cleanup_task() -> None:
 
 
 @shared_task(ignore_result=True)
-def recheck_workflow() -> None:
+def recheck_workflow(slicing: int = 100) -> None:
     """Workflow for rechecking proxies.
     chord:
     1. Get all proxies, for each, check_proxies_task(proxy) -> proxy (dict)
     2. Update the proxies, update_proxies_task(list[proxy]) -> results (list[proxy])
     """
     proxies = Proxy.objects.values("ip", "port", "protocol", "last_checked_at", "last_worked_at", "is_active")
-    if not proxies:
+    if not proxies.exists():
         return None
-    chord([check_proxies_task.s(p) for p in proxies])(save_proxies_task.s(do_create=False))
+
+    for i in range(0, proxies.count(), slicing):
+        chord([check_proxies_task.s(p) for p in proxies[i : i + slicing]])(save_proxies_task.s(do_create=False))
 
 
 @shared_task(ignore_result=True)
-def proxy_workflow(results: list[ProxyTypedDict] | None) -> None:
+def proxy_workflow(results: list[ProxyTypedDict] | None, slicing: int = 100) -> None:
     """Workflow for checking and saving proxies. This is continuation from crawl_workflow().
 
     chain: check crawl_workflow() for more details
@@ -148,7 +151,9 @@ def proxy_workflow(results: list[ProxyTypedDict] | None) -> None:
     """
     if results is None:
         return None
-    chord([check_proxies_task.s(r) for r in results])(save_proxies_task.s(do_create=True))
+
+    for i in range(0, len(results), slicing):
+        chord([check_proxies_task.s(r) for r in results[i : i + slicing]])(save_proxies_task.s(do_create=True))
 
 
 @shared_task(ignore_result=True)

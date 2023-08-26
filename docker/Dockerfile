@@ -38,12 +38,6 @@ RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /root/.cache/pip
 
-# copy the supervisord config and worker entry script
-COPY docker/supervisord.conf /etc/supervisor/supervisord.conf
-COPY docker/worker /worker
-RUN sed -i "s/\r$//g" /worker \
-    && chmod +x /worker
-
 # copy entry script
 COPY docker/entrypoint /entrypoint
 RUN sed -i "s/\r$//g" /entrypoint \
@@ -53,6 +47,9 @@ RUN sed -i "s/\r$//g" /entrypoint \
 COPY docker/start /start
 RUN sed -i "s/\r$//g" /start \
     && chmod +x /start
+
+# copy the supervisord config
+COPY docker/supervisord.conf /etc/supervisor/supervisord.conf
 
 # copy project
 COPY . .
