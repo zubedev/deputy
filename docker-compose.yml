@@ -1,28 +1,27 @@
 version: "3.8"
 
 services:
-  deputy-app:
-    container_name: deputy_app
+  app:
     build:
       context: .
       dockerfile: docker/Dockerfile
     ports:
+      - "5555:5555"
       - "8000:8000"
     volumes:
       - .:/deputy
     env_file:
       - .env
     depends_on:
-      - deputy-db
-      - deputy-mq
+      - db
+      - mq
     restart: unless-stopped
     networks:
       - deputy-net
     stdin_open: true  # docker run -i
     tty: true         # docker run -t
 
-  deputy-db:
-    container_name: deputy_db
+  db:
     image: postgres:15-alpine
     ports:
       - "5432:5432"
@@ -34,10 +33,8 @@ services:
     networks:
       - deputy-net
 
-  deputy-mq:
-    container_name: deputy_mq
+  mq:
     image: rabbitmq:3-management-alpine
-    hostname: deputy_mq
     env_file:
       - .env
     ports:
@@ -47,24 +44,21 @@ services:
     networks:
       - deputy-net
 
-  deputy-worker:
-    container_name: deputy_worker
+  worker:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    ports:
-      - "5555:5555"
     volumes:
       - .:/deputy
     env_file:
       - .env
     depends_on:
-      - deputy-db
-      - deputy-mq
+      - db
+      - mq
     restart: unless-stopped
     networks:
       - deputy-net
-    command: /worker
+    command: celery -A config worker -l INFO
 
 volumes:
   deputy-db-data:

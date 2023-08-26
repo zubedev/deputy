@@ -13,5 +13,8 @@ python manage.py createsuperuser --noinput 2> /dev/null || true
 echo "Running collectstatic..."
 python manage.py collectstatic --noinput
 
-echo "Running server..."
-exec python manage.py runserver 0.0.0.0:8000
+echo "Initializing tasks..."
+python manage.py init_tasks
+
+echo "Running supervisord..."
+supervisord -c /etc/supervisor/supervisord.conf
