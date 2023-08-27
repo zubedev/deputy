@@ -4,7 +4,6 @@ from typing import Any
 import django_stubs_ext
 from decouple import Csv, config
 
-# TODO: this package is installed in dev - needs fix
 django_stubs_ext.monkeypatch()
 
 # https://docs.djangoproject.com/en/dev/ref/settings/
@@ -68,7 +67,7 @@ ROOT_URLCONF: str = "config.urls"
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
 TEMPLATES: list[dict[str, Any]] = [
     {
-        # https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-TEMPLATES-BACKEND
+        # https://docs.djangoproject.com/en/dev/ref/settings/#std-setting-TEMPLATES-BACKEND
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         # https://docs.djangoproject.com/en/dev/ref/settings/#dirs
         "DIRS": [str(BASE_DIR / "templates")],
@@ -135,10 +134,14 @@ AUTH_USER_MODEL = "core.User"
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS: list[str] = config("ALLOWED_HOSTS", cast=Csv(), default="")
-# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
-SESSION_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
 CSRF_COOKIE_HTTPONLY = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-secure
+CSRF_COOKIE_SECURE = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
+SESSION_COOKIE_HTTPONLY = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-secure
+SESSION_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
 X_FRAME_OPTIONS = "DENY"
 

@@ -6,7 +6,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && apt-get install --no-install-recommends -y \
     # dependencies for building packages
     build-essential \
-    # psycopg2 dependencies
+    # psycopg dependencies
     libpq-dev \
     # wait script
     wait-for-it \
@@ -39,17 +39,17 @@ RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
     && rm -rf /root/.cache/pip
 
 # copy entry script
-COPY docker/entrypoint /entrypoint
+COPY docker/dev/entrypoint /entrypoint
 RUN sed -i "s/\r$//g" /entrypoint \
     && chmod +x /entrypoint
 
 # copy the start script
-COPY docker/start /start
+COPY docker/dev/start /start
 RUN sed -i "s/\r$//g" /start \
     && chmod +x /start
 
 # copy the supervisord config
-COPY docker/supervisord.conf /etc/supervisor/supervisord.conf
+COPY docker/dev/supervisord.conf /etc/supervisor/supervisord.conf
 
 # copy project
 COPY . .
