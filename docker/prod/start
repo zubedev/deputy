@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+echo "Running migrations..."
+python manage.py migrate --noinput
+
+echo "Creating superuser..."
+python manage.py createsuperuser --noinput 2> /dev/null || true
+
+echo "Running collectstatic..."
+python manage.py collectstatic --noinput
+
+echo "Initializing tasks..."
+python manage.py init_tasks
+
+echo "Running supervisord..."
+supervisord -c /etc/supervisor/supervisord.conf

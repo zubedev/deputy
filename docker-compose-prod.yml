@@ -4,20 +4,24 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/dev/Dockerfile
+      dockerfile: docker/prod/Dockerfile
     ports:
       - "5555:5555"
       - "8000:8000"
-    volumes:
-      - .:/deputy
     env_file:
       - .env
+    environment:
+      - ALLOWED_HOSTS=deputy.zube.dev
     depends_on:
       - db
       - mq
-    restart: unless-stopped
+      - caddy
     networks:
       - deputy-net
+    labels:
+      caddy: deputy.zube.dev
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+    restart: unless-stopped
     stdin_open: true  # docker run -i
     tty: true         # docker run -t
 
@@ -47,11 +51,11 @@ services:
   worker:
     build:
       context: .
-      dockerfile: docker/dev/Dockerfile
-    volumes:
-      - .:/deputy
+      dockerfile: docker/prod/Dockerfile
     env_file:
       - .env
+    environment:
+      - ALLOWED_HOSTS=deputy.zube.dev
     depends_on:
       - db
       - mq
@@ -60,8 +64,23 @@ services:
       - deputy-net
     command: celery -A config worker -l INFO
 
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:2.8-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - CADDY_INGRESS_NETWORK=deputy-net
+    networks:
+      - deputy-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - caddy-data:/data
+    restart: unless-stopped
+
 volumes:
   deputy-db-data:
+  caddy-data: {}
 
 networks:
   deputy-net:
