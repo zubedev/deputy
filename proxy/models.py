@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django_countries.fields import CountryField
 
@@ -56,11 +57,6 @@ class Proxy(BaseModel):
         constraints = [models.UniqueConstraint(fields=["ip", "port"], name="unique_proxy")]
         indexes = [models.Index(fields=["ip", "port"], name="index_proxy")]
 
-    @property
-    def url(self) -> str:
-        """Returns the proxy in the format of protocol://ip:port"""
-        return f"{self.protocol}://{self.ip}:{self.port}"
-
     def __str__(self) -> str:
         """Returns the proxy in the format of ip:port"""
         return f"{self.ip}:{self.port}"
@@ -70,6 +66,14 @@ class Proxy(BaseModel):
         if self.pk:
             return f"<{self.__class__.__name__} pk={self.pk} data={self.__str__()}>"
         return f"<{self.__class__.__name__} data={self.__str__()}>"
+
+    def get_absolute_url(self) -> str:
+        return reverse("proxy-detail", kwargs={"pk": self.pk})
+
+    @property
+    def url_format(self) -> str:
+        """Returns the proxy in the format of protocol://ip:port"""
+        return f"{self.protocol}://{self.ip}:{self.port}"
 
     @property
     def is_stale(self) -> bool:
