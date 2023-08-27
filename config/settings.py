@@ -191,8 +191,9 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "10/second", "user": "100/second"},
+    "DEFAULT_THROTTLE_RATES": {"anon": "10/sec", "user": "100/sec", "proxies_random": "1/sec"},
     # Generic View https://www.django-rest-framework.org/api-guide/settings/#generic-view-settings
     # https://www.django-rest-framework.org/api-guide/filtering/
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
