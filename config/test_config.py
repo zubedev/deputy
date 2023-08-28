@@ -7,3 +7,6 @@ DATABASES = {
         "NAME": ":memory:",
     }
 }
+
+# revert to default staticfiles storage
+STORAGES["staticfiles"] = {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"}  # noqa F405
