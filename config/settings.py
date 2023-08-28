@@ -313,3 +313,5 @@ CELERY_TIMEZONE: str = config("CELERY_TIMEZONE", cast=str, default=TIME_ZONE)
 # https://github.com/zubedev/scrapydoo
 SCRAPY_PROJECT: str = config("SCRAPY_PROJECT", cast=str, default="scraper")
 SCRAPYD_URL: str = config("SCRAPYD_URL", cast=str, default="http://localhost:6800")
+SCRAPYD_USERNAME: str = config("SCRAPYD_USERNAME", cast=str, default="")
+SCRAPYD_PASSWORD: str = config("SCRAPYD_PASSWORD", cast=str, default="")

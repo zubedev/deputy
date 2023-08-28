@@ -77,12 +77,12 @@ services:
       - deputy-net
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - caddy-data:/data
+      - deputy-caddy-data:/data
     restart: unless-stopped
 
 volumes:
   deputy-db-data:
-  caddy-data: {}
+  deputy-caddy-data: {}
 
 networks:
   deputy-net:

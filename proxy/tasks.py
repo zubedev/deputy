@@ -6,9 +6,9 @@ import requests
 from celery import chain, chord, group, shared_task
 from django.conf import settings
 from django.utils import timezone
-from scrapyd_client import ScrapydClient
 
 from config.enums import ProtocolEnums, ScrapyJobStatusEnums
+from config.scrapyd import client
 from proxy.models import Proxy
 from proxy.types import CheckedProxyTypedDict, JobsTypedDict, JobTypedDict, ProxyTypedDict
 from proxy.utils import check_proxy, get_country_code, remove_duplicates
@@ -16,14 +16,12 @@ from proxy.utils import check_proxy, get_country_code, remove_duplicates
 
 @shared_task
 def crawl_task(spider: str, spider_args: dict[str, Any] | None = None) -> str:
-    client = ScrapydClient(settings.SCRAPYD_URL)
     # schedule a scraping job and get its job id
     return client.schedule(settings.SCRAPY_PROJECT, spider, spider_args or {})  # type: ignore[no-any-return]
 
 
 @shared_task(max_retries=60, time_limit=300)  # time limit is 5 minutes
 def get_crawl_result_task(job_id: str) -> list[ProxyTypedDict] | None:
-    client = ScrapydClient(settings.SCRAPYD_URL)
     result: JobTypedDict | None = None
 
     # get the list of jobs and check the status
@@ -46,8 +44,12 @@ def get_crawl_result_task(job_id: str) -> list[ProxyTypedDict] | None:
     items_url = result["items_url"]
     url = f"{settings.SCRAPYD_URL}{items_url}"
 
+    auth = None  # scrapyd basic auth
+    if settings.SCRAPYD_USERNAME:
+        auth = (settings.SCRAPYD_USERNAME, settings.SCRAPYD_PASSWORD)
+
     # download the jsonlist and save it to the database
-    response = requests.get(url, allow_redirects=True)
+    response = requests.get(url, auth=auth, allow_redirects=True)
     if not response.ok:
         return None
 
@@ -170,7 +172,6 @@ def crawl_workflow() -> None:
     3. ...
     4. ...
     """
-    client = ScrapydClient(settings.SCRAPYD_URL)
     spiders = client.spiders(settings.SCRAPY_PROJECT)
 
     group([chain(crawl_task.s(s), get_crawl_result_task.s(), proxy_workflow.s()) for s in spiders])()
