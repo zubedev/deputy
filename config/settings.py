@@ -27,6 +27,8 @@ DJANGO_APPS: list[str] = [
     "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.messages",
+    # https://whitenoise.readthedocs.io/en/latest/django.html#using-whitenoise-in-development
+    "whitenoise.runserver_nostatic",  # 3rd party app but needed before django staticfiles
     "django.contrib.staticfiles",
 ]
 THIRD_PARTY_APPS: list[str] = [
@@ -54,6 +56,7 @@ INSTALLED_APPS: list[str] = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE: list[str] = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -135,15 +138,17 @@ AUTH_USER_MODEL = "core.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS: list[str] = config("ALLOWED_HOSTS", cast=Csv(), default="")
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY: bool = config("CSRF_COOKIE_HTTPONLY", cast=bool, default=True)
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-secure
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE: bool = config("CSRF_COOKIE_SECURE", cast=bool, default=True)
+# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-trusted-origins
+CSRF_TRUSTED_ORIGINS: list[str] = config("CSRF_TRUSTED_ORIGINS", cast=Csv(), default="")
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-seconds
+SECURE_HSTS_SECONDS: int = config("SECURE_HSTS_SECONDS", cast=int, default=86400)  # 1 day
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
-SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY: bool = config("SESSION_COOKIE_HTTPONLY", cast=bool, default=True)
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-secure
-SESSION_COOKIE_SECURE = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
-X_FRAME_OPTIONS = "DENY"
+SESSION_COOKIE_SECURE: bool = config("SESSION_COOKIE_SECURE", cast=bool, default=True)
 
 # Internationalization # --------------------------------------------------------------------------------------------- #
 
@@ -171,6 +176,19 @@ STATIC_ROOT: str = config("STATIC_ROOT", cast=str, default=BASE_DIR / "staticfil
 MEDIA_URL: str = config("MEDIA_URL", cast=str, default="media/")
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT: str = config("MEDIA_ROOT", cast=str, default=BASE_DIR / "media")
+
+# Storages # --------------------------------------------------------------------------------------------------------- #
+
+# https://docs.djangoproject.com/en/dev/ref/settings/#storages
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        # https://whitenoise.readthedocs.io/en/latest/django.html#add-compression-and-caching-support
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # REST Framework # --------------------------------------------------------------------------------------------------- #
 

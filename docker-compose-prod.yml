@@ -12,6 +12,7 @@ services:
       - .env
     environment:
       - ALLOWED_HOSTS=deputy.zube.dev
+      - CSRF_TRUSTED_ORIGINS=https://deputy.zube.dev
     depends_on:
       - db
       - mq
@@ -56,6 +57,7 @@ services:
       - .env
     environment:
       - ALLOWED_HOSTS=deputy.zube.dev
+      - CSRF_TRUSTED_ORIGINS=https://deputy.zube.dev
     depends_on:
       - db
       - mq

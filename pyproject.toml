@@ -23,6 +23,7 @@ django-celery-results = "^2.5.1"
 django-celery-beat = "^2.5.0"
 flower = "^2.0.1"
 requests = {extras = ["socks"], version = "^2.31.0"}
+whitenoise = {extras = ["brotli"], version = "^6.5.0"}
 uvicorn = {extras = ["standard"], version = "^0.23.2"}
 gunicorn = "^21.2.0"
 
