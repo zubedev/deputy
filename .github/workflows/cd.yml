@@ -48,6 +48,6 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
-            docker stop deputy
-            docker rm deputy
+            docker stop deputy || true
+            docker rm deputy || true
             ./run_deputy
