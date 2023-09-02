@@ -47,7 +47,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
             docker stop deputy || true
             docker rm deputy || true
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
             ./run_deputy
