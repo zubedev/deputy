@@ -1,0 +1,32 @@
+name: CD
+
+on:
+  push:
+    branches: ["master", "main"]
+
+concurrency:
+  group: cd-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: 3.11
+  POETRY_VERSION: 1.5.1
+
+jobs:
+  tests:
+    uses: ./.github/workflows/ci.yml
+  deploy:
+    name: "Deputy Deploy"
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - uses: actions/checkout@v3  # check out the repo
+      - uses: appleboy/ssh-action@v1.0.0  # deploy using ssh
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            docker pull ziibii88/deputy:latest
+            docker stop deputy
+            ./run_deputy

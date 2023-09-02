@@ -35,8 +35,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 FROM python:3.11-slim
 
-RUN --mount=type=cache,target=/var/cache/apt \
-    apt-get update -y  \
+RUN apt-get update -y  \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
     # psycopg dependencies

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+docker run --rm --detach --name caddy \
+    --publish 80:80 --publish 443:443 \
+    --volume deputy-caddy-data:/data \
+    --volume /var/run/docker.sock:/var/run/docker.sock \
+    --env CADDY_INGRESS_NETWORK=deputy-net \
+    --network deputy-net \
+    lucaslorentz/caddy-docker-proxy:2.8-alpine

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+docker run --rm --detach --name deputy \
+    --publish 8000:8000 --publish 5555:5555 \
+    --env-file .env \
+    --network deputy-net \
+    --label caddy=deputy.zube.dev \
+    --label caddy.reverse_proxy="{{upstreams 8000}}" \
+    ziibii88/deputy:latest /start
