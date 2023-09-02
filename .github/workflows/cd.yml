@@ -49,4 +49,5 @@ jobs:
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
             docker stop deputy
+            docker rm deputy
             ./run_deputy
