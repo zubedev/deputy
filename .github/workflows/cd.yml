@@ -15,18 +15,38 @@ env:
 jobs:
   tests:
     uses: ./.github/workflows/ci.yml
-  deploy:
-    name: "Deputy Deploy"
+
+  build:
+    name: "Deputy Build"
     runs-on: ubuntu-latest
     needs: tests
     steps:
-      - uses: actions/checkout@v3  # check out the repo
+      - uses: actions/checkout@v3
+      - uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/prod/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/deputy:${{ github.sha }}
+
+  deploy:
+    name: "Deputy Deploy"
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - uses: appleboy/ssh-action@v1.0.0  # deploy using ssh
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            docker pull ziibii88/deputy:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
             docker stop deputy
             ./run_deputy
