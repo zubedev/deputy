@@ -1,0 +1,24 @@
+# fly.toml app configuration file generated for deputy on 2023-09-02T19:39:37+08:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "deputy"
+primary_region = "sin"
+
+[build]
+  image = "ziibii88/deputy:latest"
+
+[env]
+  DEBUG = "False"
+  TIME_ZONE = "Australia/Perth"
+  ALLOWED_HOSTS = "deputy.zube.dev"
+  CSRF_TRUSTED_ORIGINS = "https://deputy.zube.dev"
+
+[http_service]
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+[experimental]
+cmd = ["celery", "--app", "config", "worker", "--concurrency", "10", "--loglevel", "INFO"]

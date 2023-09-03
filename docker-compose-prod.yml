@@ -6,13 +6,9 @@ services:
       context: .
       dockerfile: docker/prod/Dockerfile
     ports:
-      - "5555:5555"
       - "8000:8000"
     env_file:
       - .env
-    environment:
-      - ALLOWED_HOSTS=deputy.zube.dev
-      - CSRF_TRUSTED_ORIGINS=https://deputy.zube.dev
     depends_on:
       - db
       - mq
@@ -25,6 +21,14 @@ services:
     restart: unless-stopped
     stdin_open: true  # docker run -i
     tty: true         # docker run -t
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 300M
+        reservations:
+          cpus: "0.25"
+          memory: 300M
 
   db:
     image: postgres:15-alpine
@@ -55,16 +59,67 @@ services:
       dockerfile: docker/prod/Dockerfile
     env_file:
       - .env
-    environment:
-      - ALLOWED_HOSTS=deputy.zube.dev
-      - CSRF_TRUSTED_ORIGINS=https://deputy.zube.dev
     depends_on:
       - db
       - mq
     restart: unless-stopped
     networks:
       - deputy-net
-    command: celery -A config worker -l INFO
+    command: celery --app config worker --pool gevent --concurrency 10 --loglevel INFO
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 200M
+        reservations:
+          cpus: "0.1"
+          memory: 200M
+
+  beat:
+    build:
+      context: .
+      dockerfile: docker/prod/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - mq
+    restart: unless-stopped
+    networks:
+      - deputy-net
+    command: celery --app config beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel INFO
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 100M
+        reservations:
+          cpus: "0.1"
+          memory: 100M
+
+  flower:
+    build:
+      context: .
+      dockerfile: docker/prod/Dockerfile
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - mq
+    restart: unless-stopped
+    networks:
+      - deputy-net
+    command: celery --app config flower --loglevel INFO
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 100M
+        reservations:
+          cpus: "0.1"
+          memory: 100M
 
   caddy:
     image: lucaslorentz/caddy-docker-proxy:2.8-alpine

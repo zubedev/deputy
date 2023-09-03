@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: docker/dev/Dockerfile
     ports:
-      - "5555:5555"
       - "8000:8000"
     volumes:
       - .:/deputy
@@ -58,7 +57,37 @@ services:
     restart: unless-stopped
     networks:
       - deputy-net
-    command: celery -A config worker -l INFO
+    command: celery --app config worker --pool gevent --concurrency 100 --loglevel INFO
+
+  beat:
+    build:
+      context: .
+      dockerfile: docker/prod/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - mq
+    restart: unless-stopped
+    networks:
+      - deputy-net
+    command: celery --app config beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --loglevel INFO
+
+  flower:
+    build:
+      context: .
+      dockerfile: docker/prod/Dockerfile
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - mq
+    restart: unless-stopped
+    networks:
+      - deputy-net
+    command: celery --app config flower --loglevel INFO
 
 volumes:
   deputy-db-data:

@@ -12,5 +12,5 @@ accesslog = "-"
 errorlog = "-"
 
 # workers
-workers = os.cpu_count() * 2 + 1  # type: ignore[operator]
+workers = os.cpu_count() + 1  # type: ignore[operator]
 worker_class = "uvicorn.workers.UvicornWorker"

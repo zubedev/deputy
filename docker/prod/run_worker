@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+docker run --rm --detach --name worker \
+    --env-file .env \
+    --network deputy-net \
+    ziibii88/deputy:latest \
+    celery --app config worker --pool gevent --concurrency 10 --loglevel INFO
