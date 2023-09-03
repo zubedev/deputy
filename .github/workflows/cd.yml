@@ -41,6 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@v3
       - uses: appleboy/ssh-action@v1.0.0  # deploy using ssh
         with:
           host: ${{ secrets.HOST }}
