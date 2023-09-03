@@ -47,7 +47,12 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            docker stop deputy || true
-            docker rm deputy || true
+            docker stop deputy beat || true
+            docker rm deputy beat || true
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
             ./run_deputy
+            ./run_beat
+      - uses: superfly/flyctl-actions/setup-flyctl@master  # setup flyctl
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

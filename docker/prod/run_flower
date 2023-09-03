@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+docker run --rm --detach --name flower \
+    --publish 5555:5555 \
+    --env-file .env \
+    --network deputy-net \
+    --label caddy=flower.zube.dev \
+    --label caddy.reverse_proxy="{{upstreams 5555}}" \
+    ziibii88/deputy:latest \
+    celery --app config flower --loglevel INFO

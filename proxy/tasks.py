@@ -125,7 +125,7 @@ def dead_proxies_cleanup_task() -> None:
 
 
 @shared_task(ignore_result=True)
-def recheck_workflow(slicing: int = 100) -> None:
+def recheck_workflow(slicing: int = 10) -> None:
     """Workflow for rechecking proxies.
     chord:
     1. Get all proxies, for each, check_proxies_task(proxy) -> proxy (dict)
@@ -140,7 +140,7 @@ def recheck_workflow(slicing: int = 100) -> None:
 
 
 @shared_task(ignore_result=True)
-def proxy_workflow(results: list[ProxyTypedDict] | None, slicing: int = 100) -> None:
+def proxy_workflow(results: list[ProxyTypedDict] | None, slicing: int = 10) -> None:
     """Workflow for checking and saving proxies. This is continuation from crawl_workflow().
 
     chain: check crawl_workflow() for more details
