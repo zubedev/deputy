@@ -42,7 +42,7 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v3
-      - uses: appleboy/ssh-action@v1.0.0  # deploy using ssh
+      - uses: appleboy/ssh-action@v1.0.0  # deploy app using ssh
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
@@ -53,6 +53,17 @@ jobs:
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
             ./run_deputy
             ./run_beat
+      - uses: appleboy/ssh-action@v1.0.0  # deploy worker using ssh
+        with:
+          host: ${{ secrets.WB_HOST }}
+          username: ${{ secrets.WB_USERNAME }}
+          key: ${{ secrets.WB_KEY }}
+          script: |
+            cd apps/deputy
+            docker stop worker || true
+            docker rm worker || true
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
+            ./run_worker
       - uses: superfly/flyctl-actions/setup-flyctl@master  # setup flyctl
       - run: flyctl deploy --remote-only
         env:
