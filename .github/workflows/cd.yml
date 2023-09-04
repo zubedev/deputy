@@ -59,6 +59,7 @@ jobs:
           username: ${{ secrets.WB_USERNAME }}
           key: ${{ secrets.WB_KEY }}
           script: |
+            export PATH="/usr/local/bin:$PATH"
             cd apps/deputy
             docker stop worker || true
             docker rm worker || true
