@@ -15,10 +15,5 @@ primary_region = "sin"
   ALLOWED_HOSTS = "deputy.zube.dev"
   CSRF_TRUSTED_ORIGINS = "https://deputy.zube.dev"
 
-[http_service]
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 1
-
-[experimental]
-cmd = ["celery", "--app", "config", "worker", "--pool", "gevent", "--concurrency", "10", "--loglevel", "INFO"]
+[processes]
+  worker = "celery --app config worker --pool gevent --concurrency 10 --loglevel INFO"
