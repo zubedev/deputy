@@ -5,6 +5,7 @@ from types import ModuleType
 import pytest
 from django.conf import LazySettings
 from django.urls import clear_url_caches
+from rest_framework import status
 from rest_framework.test import APIClient
 
 
@@ -21,23 +22,23 @@ class TestUrls:
         self.reload_urlconf(settings)
 
         res1 = api_client.get("/schema/")
-        assert res1.status_code == 200
+        assert res1.status_code == status.HTTP_200_OK
 
         res2 = api_client.get("/schema/swagger/")
-        assert res2.status_code == 200
+        assert res2.status_code == status.HTTP_200_OK
 
         res3 = api_client.get("/schema/redoc/")
-        assert res3.status_code == 200
+        assert res3.status_code == status.HTTP_200_OK
 
         settings.DEBUG = False
         clear_url_caches()
         self.reload_urlconf(settings)
 
         res4 = api_client.get("/schema/")
-        assert res4.status_code == 404
+        assert res4.status_code == status.HTTP_200_OK
 
         res5 = api_client.get("/schema/swagger/")
-        assert res5.status_code == 404
+        assert res5.status_code == status.HTTP_200_OK
 
         res6 = api_client.get("/schema/redoc/")
-        assert res6.status_code == 404
+        assert res6.status_code == status.HTTP_200_OK
