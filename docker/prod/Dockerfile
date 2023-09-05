@@ -12,7 +12,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
 # set environment variables
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV POETRY_VERSION=1.5.1
+ENV POETRY_VERSION=1.6.1
 
 # set work directory as /deputy
 WORKDIR /requirements
