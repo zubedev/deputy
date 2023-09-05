@@ -1,9 +1,10 @@
+from django_countries.serializers import CountryFieldMixin
 from rest_framework import serializers
 
 from proxy.models import Proxy
 
 
-class ProxySerializer(serializers.HyperlinkedModelSerializer):
+class ProxySerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Proxy
         fields = (
@@ -31,8 +32,8 @@ class ProxySerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class ProxyRandomSerializer(serializers.HyperlinkedModelSerializer):
+class ProxyRandomSerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Proxy
-        fields = ("ip", "port")
-        read_only_fields = ("ip", "port")
+        fields = ("ip", "port", "protocol", "country", "anonymity")
+        read_only_fields = ("ip", "port", "protocol", "country", "anonymity")
