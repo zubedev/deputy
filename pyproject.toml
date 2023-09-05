@@ -7,39 +7,40 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11.4"
+python = "~3.11"
 python-decouple = "^3.8"
-psycopg = {extras = ["c"], version = "^3.1.10"}
-django = {extras = ["argon2"], version = "^4.2.4"}
-django-stubs = {extras = ["compatible-mypy"], version = "^4.2.3"}
-djangorestframework = "^3.14.0"
-django-cors-headers = "^4.2.0"
+psycopg = "^3.1"
+django = {extras = ["argon2"], version = "^4.2"}
+django-stubs = {extras = ["compatible-mypy"], version = "^4.2"}
+djangorestframework = "^3.14"
+django-cors-headers = "^4.2"
 django-filter = "^23.2"
-drf-spectacular = "^0.26.4"
-django-countries = {extras = ["pyuca"], version = "^7.5.1"}
-scrapyd-client = "^1.2.3"
-celery = {extras = ["gevent", "librabbitmq"], version = "^5.3.1"}
-django-celery-results = "^2.5.1"
-django-celery-beat = "^2.5.0"
-flower = "^2.0.1"
-requests = {extras = ["socks"], version = "^2.31.0"}
-whitenoise = {extras = ["brotli"], version = "^6.5.0"}
-uvicorn = {extras = ["standard"], version = "^0.23.2"}
-gunicorn = "^21.2.0"
+drf-spectacular = "^0.26"
+django-countries = {extras = ["pyuca"], version = "^7.5"}
+scrapyd-client = "^1.2"
+celery = {extras = ["librabbitmq"], version = "^5.3"}
+django-celery-results = "^2.5"
+django-celery-beat = "^2.5"
+flower = "^2.0"
+requests = {extras = ["socks"], version = "^2.31"}
+whitenoise = {extras = ["brotli"], version = "^6.5"}
+uvicorn = {extras = ["standard"], version = "^0.23"}
+gunicorn = "^21.2"
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^3.3.3"
-black = "^23.7.0"
-mypy = "^1.4.1"
-ruff = "^0.0.286"
-djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14.2"}
-celery-types = "^0.19.0"
-pytest = "^7.4.0"
-pytest-cov = "^4.1.0"
-pytest-django = "^4.5.2"
-pytest-factoryboy = "^2.5.1"
-pytest-mypy-plugins = "^3.0.0"
-pytest-xdist = {extras = ["psutil"], version = "^3.3.1"}
+psycopg = {extras = ["binary"], version = "^3.1"}
+pre-commit = "^3.3"
+black = "^23.7"
+mypy = "1.4.1"  # pinned until django-stubs is updated
+ruff = "^0.0.287"
+djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14"}
+celery-types = "^0.19"
+pytest = "^7.4"
+pytest-cov = "^4.1"
+pytest-django = "^4.5"
+pytest-factoryboy = "^2.5"
+pytest-mypy-plugins = "^3.0"
+pytest-xdist = {extras = ["psutil"], version = "^3.3"}
 
 [build-system]
 requires = ["poetry-core"]

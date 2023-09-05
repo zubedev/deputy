@@ -13,12 +13,13 @@ class ProxyAdmin(admin.ModelAdmin[Proxy]):
         "anonymity",
         "source",
         "is_active",
+        "check_fail_count",
         "last_checked_at",
         "last_worked_at",
         "created_at",
         "updated_at",
     )
-    list_filter = ("protocol", "anonymity", "is_active", "source", "country")
+    list_filter = ("protocol", "anonymity", "is_active", "check_fail_count", "source", "country")
     ordering = ("-is_active", "-last_checked_at")
     search_fields = ("id", "ip", "port", "source", "country")
     readonly_fields = (
@@ -28,6 +29,7 @@ class ProxyAdmin(admin.ModelAdmin[Proxy]):
         "is_dead",
         "created_at",
         "updated_at",
+        "check_fail_count",
         "last_checked_at",
         "last_worked_at",
     )

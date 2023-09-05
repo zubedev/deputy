@@ -1,5 +1,4 @@
 import json
-from datetime import timedelta
 from typing import Any
 
 import requests
@@ -66,6 +65,9 @@ def check_proxies_task(proxy: ProxyTypedDict | CheckedProxyTypedDict | None) -> 
         return None
 
     result: CheckedProxyTypedDict = {**proxy, "is_active": False}  # type: ignore[misc]
+    if "check_fail_count" not in result:
+        result["check_fail_count"] = 0
+
     timestamp = timezone.now()
     if check_proxy(
         ip=proxy["ip"],
@@ -75,7 +77,9 @@ def check_proxies_task(proxy: ProxyTypedDict | CheckedProxyTypedDict | None) -> 
             ProtocolEnums.HTTP.value,
         ),
     ):
-        result.update({"is_active": True, "last_worked_at": timestamp})
+        result.update({"is_active": True, "last_worked_at": timestamp, "check_fail_count": 0})
+    else:  # increment the fail count
+        result["check_fail_count"] += 1
 
     result["last_checked_at"] = timestamp
     return result
@@ -91,7 +95,7 @@ def save_proxies_task(
         return None
 
     unique_fields = ["ip", "port"]
-    update_fields = ["protocol", "last_checked_at", "last_worked_at", "is_active"]
+    update_fields = ["protocol", "check_fail_count", "last_checked_at", "last_worked_at", "is_active"]
     if do_create:  # add more fields to update for new proxies
         update_fields.extend(["country", "anonymity", "source"])
         # remove duplicates based on ip and port during creation
@@ -114,14 +118,8 @@ def save_proxies_task(
 
 @shared_task
 def dead_proxies_cleanup_task() -> None:
-    """Deletes dead proxies, where proxies that have not been working for more than 1 day."""
-    one_day_ago = timezone.now() - timedelta(days=1)
-    # First, find proxies that are atleast 1 day old and not active
-    queryset = Proxy.objects.filter(created_at__lt=one_day_ago, is_active=False)
-    # Then, find proxies that have not been working for more than 1 day or never worked
-    queryset = queryset.filter(last_worked_at__lt=one_day_ago) | queryset.filter(last_worked_at__isnull=True)
-    # Finally, delete the proxies
-    queryset.delete()
+    """Deletes dead proxies, where proxies that have not been working after 3 checks."""
+    Proxy.objects.filter(check_fail_count__gte=3).delete()
 
 
 @shared_task(ignore_result=True)
@@ -131,7 +129,9 @@ def recheck_workflow(slicing: int = 10) -> None:
     1. Get all proxies, for each, check_proxies_task(proxy) -> proxy (dict)
     2. Update the proxies, update_proxies_task(list[proxy]) -> results (list[proxy])
     """
-    proxies = Proxy.objects.values("ip", "port", "protocol", "last_checked_at", "last_worked_at", "is_active")
+    proxies = Proxy.objects.values(
+        "ip", "port", "protocol", "check_fail_count", "last_checked_at", "last_worked_at", "is_active"
+    )
     if not proxies.exists():
         return None
 

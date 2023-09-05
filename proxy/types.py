@@ -32,5 +32,6 @@ class ProxyTypedDict(TypedDict):
 class CheckedProxyTypedDict(ProxyTypedDict):
     # includes all fields from ProxyTypedDict
     is_active: bool
+    check_fail_count: int
     last_checked_at: datetime | None  # datetime (optional)
     last_worked_at: datetime | None  # datetime (optional)

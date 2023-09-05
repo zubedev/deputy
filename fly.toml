@@ -21,4 +21,4 @@ primary_region = "sin"
   min_machines_running = 2
 
 [experimental]
-  cmd = ["celery", "--app", "config", "worker", "--pool", "gevent", "--concurrency", "10", "--loglevel", "INFO"]
+  cmd = ["celery", "--app", "config", "worker", "--pool", "threads", "--concurrency", "10", "--loglevel", "INFO"]

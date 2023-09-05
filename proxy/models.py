@@ -39,6 +39,11 @@ class Proxy(BaseModel):
         max_length=254,
         help_text="source of the proxy.",
     )
+    check_fail_count = models.PositiveIntegerField(
+        "check fail count",
+        default=0,
+        help_text="number of times the proxy has been checked since it worked last.",
+    )
     last_checked_at = models.DateTimeField(
         "last checked at",
         null=True,
@@ -90,11 +95,4 @@ class Proxy(BaseModel):
     @property
     def is_dead(self) -> bool:
         """Returns True if the proxy is dead, False otherwise."""
-        # must be at least a day old to be considered dead
-        if (timezone.now() - self.created_at).total_seconds() < 86400:  # 86400 seconds = 1 day
-            return False
-        # must have been working at least for a day ago
-        if self.last_worked_at and (timezone.now() - self.last_worked_at).total_seconds() < 86400:  # 86400 secs = 1 day
-            return False
-        # at this point the proxy is a day old and has not been working for a day, so it is dead if it is not active
-        return not self.is_active
+        return self.check_fail_count >= 3
