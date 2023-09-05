@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# get the list of machines
+l=$(flyctl machines list)
+
+# get the first line which mentions the number of machines
+f=$(head -n 1 < <(echo "$l"))
+
+# get the number of machines from the first word
+n=$(awk '{print $1}' < <(echo "$f"))
+
+# if n=No, then there are no machines to destroy, exit successfully
+if [[ "$n" == "No" ]]; then
+  echo "No machines to destroy, exiting script."
+  exit 0
+fi
+
+# get the list of machine ids
+i=$(tail -n "$n" < <(echo "$l") | awk '{print $1}')
+
+# iterate over the list of machine ids and destroy them
+while read -r id; do
+  flyctl machines destroy --force "$id"
+done < <(echo "$i")
+
+# exit successfully
+exit 0
