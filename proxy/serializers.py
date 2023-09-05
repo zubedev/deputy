@@ -13,6 +13,7 @@ class ProxySerializer(serializers.HyperlinkedModelSerializer):
             "protocol",
             "country",
             "anonymity",
+            "check_fail_count",
             "last_checked_at",
             "last_worked_at",
             "created_at",
@@ -20,7 +21,14 @@ class ProxySerializer(serializers.HyperlinkedModelSerializer):
             "is_active",
             "url",
         )
-        read_only_fields = ("is_active", "last_checked_at", "last_worked_at", "created_at", "updated_at")
+        read_only_fields = (
+            "is_active",
+            "check_fail_count",
+            "last_checked_at",
+            "last_worked_at",
+            "created_at",
+            "updated_at",
+        )
 
 
 class ProxyRandomSerializer(serializers.HyperlinkedModelSerializer):
