@@ -20,6 +20,16 @@ class JobsTypedDict(TypedDict):
     finished: list[JobTypedDict]
 
 
+class CheckProxyResultTypedDict(TypedDict):
+    ip: str
+    port: int
+    protocol: str
+    country: str
+    anonymity: str
+    speed: int
+    is_working: bool
+
+
 class ProxyTypedDict(TypedDict):
     ip: str  # 255.255.255.255
     port: int  # 1-65535

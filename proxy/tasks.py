@@ -1,12 +1,14 @@
 import json
+from datetime import timedelta
 from typing import Any
 
 import requests
 from celery import chain, chord, group, shared_task
 from django.conf import settings
+from django.db.models import QuerySet
 from django.utils import timezone
 
-from config.enums import ProtocolEnums, ScrapyJobStatusEnums
+from config.enums import ScrapyJobStatusEnums
 from config.scrapyd import client
 from proxy.models import Proxy
 from proxy.types import CheckedProxyTypedDict, JobsTypedDict, JobTypedDict, ProxyTypedDict
@@ -61,28 +63,44 @@ def check_proxies_task(proxy: ProxyTypedDict | CheckedProxyTypedDict | None) -> 
     if proxy is None:
         return None
 
-    if not all([proxy.get("ip", False), proxy.get("port", False)]):
+    if not all([proxy.get("ip"), proxy.get("port")]):
         return None
 
-    result: CheckedProxyTypedDict = {**proxy, "is_active": False}  # type: ignore[misc]
-    if "check_fail_count" not in result:
-        result["check_fail_count"] = 0
+    if "check_fail_count" not in proxy:
+        proxy["check_fail_count"] = 0  # type: ignore[typeddict-unknown-key]
+    if "last_checked_at" not in proxy:
+        proxy["last_checked_at"] = None  # type: ignore[typeddict-unknown-key]
+    if "last_worked_at" not in proxy:
+        proxy["last_worked_at"] = None  # type: ignore[typeddict-unknown-key]
+    proxy["is_active"] = False  # type: ignore[typeddict-unknown-key]
+
+    result = CheckedProxyTypedDict(**proxy)  # type: ignore[misc]
 
     timestamp = timezone.now()
-    if check_proxy(
-        ip=proxy["ip"],
-        port=proxy["port"],
-        protocol=proxy.get(  # type: ignore[arg-type]
-            "protocol",
-            ProtocolEnums.HTTP.value,
-        ),
-    ):
+
+    checked_proxy = check_proxy(ip=proxy["ip"], port=proxy["port"])
+
+    if checked_proxy["is_working"]:
+        if not result.get("protocol"):
+            result["protocol"] = checked_proxy["protocol"]
+        elif "http" in result["protocol"] and "socks" in checked_proxy["protocol"]:
+            result["protocol"] = checked_proxy["protocol"]
+        elif "socks" in result["protocol"] and "http" in checked_proxy["protocol"]:
+            result["protocol"] = checked_proxy["protocol"]
+
+        if not result.get("country") and checked_proxy["country"]:
+            result["country"] = checked_proxy["country"]
+        elif result["country"] != checked_proxy["country"] and checked_proxy["country"]:
+            result["country"] = checked_proxy["country"]
+
+        result["anonymity"] = checked_proxy["anonymity"]
         result.update({"is_active": True, "last_worked_at": timestamp, "check_fail_count": 0})
+
     else:  # increment the fail count
         result["check_fail_count"] += 1
 
     result["last_checked_at"] = timestamp
-    return result
+    return result  # type: ignore[no-any-return]
 
 
 @shared_task
@@ -124,14 +142,17 @@ def dead_proxies_cleanup_task() -> None:
 
 @shared_task(ignore_result=True)
 def recheck_workflow(slicing: int = 10) -> None:
-    """Workflow for rechecking proxies.
+    """Workflow for rechecking proxies that was checked more than an hour ago.
     chord:
     1. Get all proxies, for each, check_proxies_task(proxy) -> proxy (dict)
     2. Update the proxies, update_proxies_task(list[proxy]) -> results (list[proxy])
     """
-    proxies = Proxy.objects.values(
-        "ip", "port", "protocol", "check_fail_count", "last_checked_at", "last_worked_at", "is_active"
-    )
+    one_hour_ago = timezone.now() - timedelta(hours=1)
+
+    qs: QuerySet[Proxy] = Proxy.objects.filter(last_checked_at__isnull=True)
+    qs = qs | Proxy.objects.filter(last_checked_at__lte=one_hour_ago)
+    proxies = qs.values("ip", "port", "protocol", "check_fail_count", "last_checked_at", "last_worked_at", "is_active")
+
     if not proxies.exists():
         return None
 

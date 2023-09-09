@@ -5,7 +5,6 @@ from django_countries.fields import CountryField
 
 from config.enums import AnonymityEnums, ProtocolEnums
 from config.mixins import BaseModel
-from proxy.utils import check_proxy
 
 
 class Proxy(BaseModel):
@@ -86,11 +85,6 @@ class Proxy(BaseModel):
         if not self.last_checked_at:
             return True
         return (timezone.now() - self.last_checked_at).total_seconds() > 3600  # 3600 seconds = 1 hour
-
-    @property
-    def is_working(self) -> bool:
-        """Returns True if the proxy is working, False otherwise. Despite the is_active field."""
-        return check_proxy(self.ip, self.port, self.protocol)
 
     @property
     def is_dead(self) -> bool:

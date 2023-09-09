@@ -1,35 +1,59 @@
 import logging
-import random
+import time
 from collections.abc import Sequence
 from typing import Any
 
-import requests
 from django_countries import countries
 
-from config.enums import ProtocolEnums
-from config.lists import USER_AGENTS, WEBSITES
-from proxy.types import CheckedProxyTypedDict, ProxyTypedDict
+from config.inspector import inspector
+from proxy.types import CheckedProxyTypedDict, CheckProxyResultTypedDict, ProxyTypedDict
 
 logger = logging.getLogger(__name__)
 
 
-def check_proxy(ip: str, port: int | str, protocol: str = ProtocolEnums.HTTP.value) -> bool:
+def check_proxy(ip: str, port: int | str) -> CheckProxyResultTypedDict:
     """Returns True if the proxy is working, False otherwise."""
-    logger.debug(f"Checking proxy {protocol}://{ip}:{port} ...")
+    logger.debug(f"Checking proxy {ip}:{port} ...")
 
-    protocol = protocol.lower() if "socks" in protocol.lower() else "http"
-    proxy = f"{protocol}://{ip}:{port}"
-    proxies = {"http": proxy, "https": proxy}
-    headers = {"User-Agent": random.choice(USER_AGENTS)}
-    url = random.choice(WEBSITES)
+    result = CheckProxyResultTypedDict(
+        ip=ip,
+        port=int(port),
+        protocol="",
+        country="",
+        anonymity="transparent",
+        speed=0,
+        is_working=False,
+    )
+    protocols = ["http", "socks4", "socks5"]
 
-    logger.debug(f"Sending request to {url=} via {proxies=} ...")
-    try:
-        response = requests.get(url=url, headers=headers, proxies=proxies, timeout=10, allow_redirects=True)
-        return response.ok
-    except Exception as e:
-        logger.debug(e)
-    return False
+    for protocol in protocols:
+        proxy = f"{protocol}://{ip}:{port}"
+        logger.debug(f"Sending request to inspector via {proxy=} ...")
+        proxies = {"http": proxy, "https": proxy}
+
+        start_time = time.perf_counter_ns()
+        response = inspector.get_headers(proxies=proxies)
+        elapsed_time = int((time.perf_counter_ns() - start_time) / 1000000)  # in milliseconds
+
+        if not response:
+            continue
+
+        # at this point, the proxy is working, set the values and break
+        result["protocol"] = protocol
+        result["country"] = response["country"]
+        result["speed"] = elapsed_time
+
+        if response["ip"] == ip:
+            headers = ["via", "from", "x_real_ip", "client_ip", "x_proxy_id", "proxy_authorization", "proxy_connection"]
+            if any(header in response for header in headers):
+                result["anonymity"] = "anonymous"
+            else:
+                result["anonymity"] = "elite"
+
+        result["is_working"] = True
+        break
+
+    return result
 
 
 def remove_duplicates(
