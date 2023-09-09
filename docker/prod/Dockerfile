@@ -23,7 +23,7 @@ COPY poetry.lock* pyproject.toml ./
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip \
     && pip install "poetry==$POETRY_VERSION" \
-    && poetry export --without-hashes -f requirements.txt --output requirements.txt
+    && poetry export --without dev --without-hashes -f requirements.txt --output requirements.txt
 
 # create a virtual environment and install dependencies
 RUN python -m venv /venv

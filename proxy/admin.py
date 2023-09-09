@@ -25,7 +25,6 @@ class ProxyAdmin(admin.ModelAdmin[Proxy]):
     readonly_fields = (
         "url_format",
         "is_stale",
-        "is_working",
         "is_dead",
         "created_at",
         "updated_at",
