@@ -308,6 +308,11 @@ CELERY_TASK_ALWAYS_EAGER: bool = config("CELERY_TASK_ALWAYS_EAGER", cast=bool, d
 CELERY_TASK_TRACK_STARTED: bool = config("CELERY_TASK_TRACK_STARTED", cast=bool, default=True)
 CELERY_TIMEZONE: str = config("CELERY_TIMEZONE", cast=str, default=TIME_ZONE)
 
+# Inspector # -------------------------------------------------------------------------------------------------------- #
+
+# https://github.com/zubedev/inspector
+INSPECTOR_URL: str = config("INSPECTOR_URL", cast=str, default="https://inspector.zube.dev")
+
 # Scrapy # ----------------------------------------------------------------------------------------------------------- #
 
 # https://github.com/zubedev/scrapydoo
