@@ -12,6 +12,7 @@ env:
   PYTHON_VERSION: 3.11
   POETRY_VERSION: 1.6.1
   POSTGRES_DB: postgres
+  POSTGRES_HOST: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
 
@@ -69,7 +70,7 @@ jobs:
     name: "Deputy Docker"
     runs-on: ubuntu-latest
     services:
-      db:
+      postgres:
         image: postgres:15-alpine
         env:
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
