@@ -86,7 +86,8 @@ jobs:
         with:
           context: .
           file: ./docker/dev/Dockerfile
-          push: false
+          load: true  # load image to docker daemon
+          push: false  # dont push image to docker registry
           tags: deputy:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
