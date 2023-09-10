@@ -26,7 +26,6 @@ requests = {extras = ["socks"], version = "^2.31"}
 whitenoise = {extras = ["brotli"], version = "^6.5"}
 uvicorn = {extras = ["standard"], version = "^0.23"}
 gunicorn = "^21.2"
-httpx = "^0.24.1"
 
 [tool.poetry.group.dev.dependencies]
 psycopg = {extras = ["binary"], version = "^3.1"}
