@@ -11,10 +11,6 @@ concurrency:
 env:
   PYTHON_VERSION: 3.11
   POETRY_VERSION: 1.6.1
-  POSTGRES_DB: postgres
-  POSTGRES_HOST: postgres
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
 
 jobs:
   ci:
@@ -69,16 +65,6 @@ jobs:
   docker:
     name: "Deputy Docker"
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15-alpine
-        env:
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v4  # check out the repo
       - run: cp .env.example .env  # copy .env file
@@ -86,14 +72,8 @@ jobs:
       - uses: docker/build-push-action@v4 # build docker image
         with:
           context: .
-          file: ./docker/dev/Dockerfile
-          load: true  # load image to docker daemon
-          push: false  # dont push image to docker registry
-          tags: deputy:latest
+          file: ./docker/prod/Dockerfile
+          push: false  # don't push image to docker registry
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - run: |
-          docker run --rm --name deputy --env-file .env deputy:latest python manage.py migrate
-          docker run --rm --name deputy --env-file .env deputy:latest ruff .
-          docker run --rm --name deputy --env-file .env deputy:latest black .
-          docker run --rm --name deputy --env-file .env deputy:latest mypy .
