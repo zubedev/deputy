@@ -11,6 +11,9 @@ concurrency:
 env:
   PYTHON_VERSION: 3.11
   POETRY_VERSION: 1.6.1
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
 
 jobs:
   ci:
@@ -65,10 +68,6 @@ jobs:
   docker:
     name: "Deputy Docker"
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     services:
       db:
         image: postgres:15-alpine
