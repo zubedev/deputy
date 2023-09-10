@@ -61,19 +61,3 @@ jobs:
         run: poetry run mypy .
       - name: Test project
         run: poetry run pytest
-
-  docker:
-    name: "Deputy Docker"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4  # check out the repo
-      - run: cp .env.example .env  # copy .env file
-      - uses: docker/setup-buildx-action@v2 # setup docker buildx
-      - uses: docker/build-push-action@v4 # build docker image
-        with:
-          context: .
-          file: ./docker/prod/Dockerfile
-          push: false  # don't push image to docker registry
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
