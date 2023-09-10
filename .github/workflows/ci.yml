@@ -90,10 +90,8 @@ jobs:
           tags: deputy:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - run: |
-          docker run --name deputy --env-file .env deputy:latest python manage.py migrate
-          docker run --name deputy --env-file .env deputy:latest ruff .
-          docker run --name deputy --env-file .env deputy:latest black .
-          docker run --name deputy --env-file .env deputy:latest mypy .
-          docker stop deputy || true
-          docker rm deputy || true
+        run: |
+          docker run --rm --name deputy --env-file .env deputy:latest python manage.py migrate
+          docker run --rm --name deputy --env-file .env deputy:latest ruff .
+          docker run --rm --name deputy --env-file .env deputy:latest black .
+          docker run --rm --name deputy --env-file .env deputy:latest mypy .
