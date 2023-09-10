@@ -35,6 +35,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/deputy:${{ github.sha }}
             ${{ secrets.DOCKERHUB_USERNAME }}/deputy:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     name: "Deputy Deploy"
