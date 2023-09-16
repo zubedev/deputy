@@ -30,7 +30,7 @@ gunicorn = "^21.2"
 [tool.poetry.group.dev.dependencies]
 psycopg = {extras = ["binary"], version = "^3.1"}
 pre-commit = "^3.3"
-black = "^23.7"
+black = "^23.9"
 mypy = "1.4.1"  # pinned until django-stubs is updated
 ruff = "^0.0.287"
 djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14"}
