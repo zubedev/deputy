@@ -32,7 +32,7 @@ psycopg = {extras = ["binary"], version = "^3.1"}
 pre-commit = "^3.3"
 black = "^23.7"
 mypy = "1.4.1"  # pinned until django-stubs is updated
-ruff = "^0.0.287"
+ruff = "^0.0.291"
 djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14"}
 celery-types = "^0.19"
 pytest = "^7.4"
