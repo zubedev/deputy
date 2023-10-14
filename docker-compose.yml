@@ -62,7 +62,7 @@ services:
   beat:
     build:
       context: .
-      dockerfile: docker/prod/Dockerfile
+      dockerfile: docker/dev/Dockerfile
     env_file:
       - .env
     depends_on:
@@ -76,7 +76,7 @@ services:
   flower:
     build:
       context: .
-      dockerfile: docker/prod/Dockerfile
+      dockerfile: docker/dev/Dockerfile
     ports:
       - "5555:5555"
     env_file:
