@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update -y  \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
@@ -33,7 +33,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     poetry install --with=dev --no-interaction
 
 # remove packages that are not needed anymore
-RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     build-essential \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /root/.cache/pip
