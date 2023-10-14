@@ -74,7 +74,7 @@ def check_proxies_task(proxy: ProxyTypedDict | CheckedProxyTypedDict | None) -> 
         proxy["last_worked_at"] = None  # type: ignore[typeddict-unknown-key]
     proxy["is_active"] = False  # type: ignore[typeddict-unknown-key]
 
-    result = CheckedProxyTypedDict(**proxy)  # type: ignore[misc]
+    result = CheckedProxyTypedDict(**proxy)  # type: ignore[typeddict-item]
 
     timestamp = timezone.now()
 
