@@ -34,7 +34,7 @@ black = "^23.7"
 mypy = "~1.5.1"
 ruff = "^0.0.287"
 djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14"}
-celery-types = "^0.19"
+celery-types = "^0.20"
 pytest = "^7.4"
 pytest-cov = "^4.1"
 pytest-django = "^4.5"
