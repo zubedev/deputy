@@ -30,7 +30,7 @@ gunicorn = "^21.2"
 [tool.poetry.group.dev.dependencies]
 psycopg = {extras = ["binary"], version = "^3.1"}
 pre-commit = "^3.5"
-black = "^23.7"
+black = "^23.11"
 mypy = "~1.5.1"
 ruff = "^0.0.287"
 djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14"}
