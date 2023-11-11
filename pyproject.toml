@@ -32,7 +32,7 @@ psycopg = {extras = ["binary"], version = "^3.1"}
 pre-commit = "^3.5"
 black = "^23.7"
 mypy = "~1.5.1"
-ruff = "^0.0.287"
+ruff = "^0.1.5"
 djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^3.14"}
 celery-types = "^0.19"
 pytest = "^7.4"
