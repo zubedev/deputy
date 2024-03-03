@@ -109,7 +109,7 @@ class UserAdmin(DjangoUserAdmin):
     search_fields = ("id", "name", "email")
 
     # change view
-    form = UserAdminChangeForm
+    form = UserAdminChangeForm  # type: ignore[assignment]
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         ("Personal Info", {"fields": ("name",)}),
