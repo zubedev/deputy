@@ -1,4 +1,4 @@
-FROM python:3.11-slim as requirements
+FROM python:3.12-slim as requirements
 
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update -y  \
@@ -12,7 +12,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
 # set environment variables
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV POETRY_VERSION=1.8.2
+ENV POETRY_VERSION=1.8.3
 
 # set work directory as /deputy
 WORKDIR /requirements
@@ -33,7 +33,7 @@ ENV PATH="/venv/bin:$PATH"
 RUN --mount=type=cache,target=/root/.cache/pip \
     /venv/bin/python -m pip install -r requirements.txt
 
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 RUN apt-get update -y  \
     && apt-get upgrade -y \

@@ -73,7 +73,7 @@ class LogEntryAdmin(admin.ModelAdmin[LogEntry]):
 class UserAdminChangeForm(UserChangeForm[AbstractBaseUser]):
     """Form for updating users in admin"""
 
-    class Meta(UserChangeForm.Meta):
+    class Meta(UserChangeForm.Meta):  # type: ignore[name-defined,misc]
         model = UserModel
         field_classes = {"email": EmailField}
 
@@ -81,7 +81,7 @@ class UserAdminChangeForm(UserChangeForm[AbstractBaseUser]):
 class UserAdminCreationForm(UserCreationForm[AbstractBaseUser]):
     """Form for creating users in admin"""
 
-    class Meta(UserCreationForm.Meta):
+    class Meta(UserCreationForm.Meta):  # type: ignore[name-defined,misc]
         model = UserModel
         fields = ("email", "name")
         field_classes = {"email": EmailField}
@@ -89,7 +89,7 @@ class UserAdminCreationForm(UserCreationForm[AbstractBaseUser]):
 
 
 @admin.register(UserModel)
-class UserAdmin(DjangoUserAdmin):
+class UserAdmin(DjangoUserAdmin):  # type: ignore[type-arg]
     # list view
     date_hierarchy = "created_at"
     list_display = (
@@ -109,7 +109,7 @@ class UserAdmin(DjangoUserAdmin):
     search_fields = ("id", "name", "email")
 
     # change view
-    form = UserAdminChangeForm  # type: ignore[assignment]
+    form = UserAdminChangeForm
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         ("Personal Info", {"fields": ("name",)}),

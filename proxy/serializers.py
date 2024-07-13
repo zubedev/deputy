@@ -4,7 +4,7 @@ from rest_framework import serializers
 from proxy.models import Proxy
 
 
-class ProxySerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer):
+class ProxySerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer):  # type: ignore[type-arg]
     class Meta:
         model = Proxy
         fields = (
@@ -32,7 +32,7 @@ class ProxySerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer)
         )
 
 
-class ProxyRandomSerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer):
+class ProxyRandomSerializer(CountryFieldMixin, serializers.HyperlinkedModelSerializer):  # type: ignore[type-arg]
     class Meta:
         model = Proxy
         fields = ("ip", "port", "protocol", "country", "anonymity")
